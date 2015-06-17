@@ -10,7 +10,7 @@ def validate(letter):
        Namely
 
        a) Does every unique headword in the spreadsheet have a corresponding
-          html file? If not, which are missing?
+          html file?
 
        b) Are their more html files than there should be? If so, what are they?
     """
