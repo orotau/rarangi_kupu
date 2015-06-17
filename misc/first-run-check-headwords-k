@@ -1,0 +1,39 @@
+We have retrieved the html files from the web
+
+1) At the most coarse the 'headword' we used is simply
+wrong. In this case we need to 
+
+a) Change the entry in the LibreOffice spreadsheet ctrl-H to find in the spreadsheet
+b) Delete the html file from the filesystem
+c) Rerun the pull_to_the_filesystem
+d) Check we have the correct number of files
+
+
+no headword found for ('hōhiwitanga', '') misspelling (probably) - Done
+no headword found for ('kūngoningoni', '') misspelling (probably) - Done
+no headword found for ('kōngahungau', '') misspelling (probably) - Done
+no headword found for ('kāwerau', '') misspelling (probably) - Done
+no headword found for ('Korekore-piri-ngā-Tangaroa', '') misspelling (probably) -Done
+no headword found for ('koehohi', '') misspelling (probably) - Done
+no headword found for ('Korekkore-tūrua', '') misspelling (probably) - Done
+no headword found for ('kakrewao', '') misspelling (probably) - Done
+
+Check CaSe / Macrons / Variant Number ('kāi', 1) should be kāī - Done - DELETE
+Check CaSe / Macrons / Variant Number ('kāi', 2) should be kāī - Done
+Check CaSe / Macrons / Variant Number ('kia', '') should be kia, 1 - Done
+Check CaSe / Macrons / Variant Number ('kianga', '') should be kīanga - Done - DELETE
+Check CaSe / Macrons / Variant Number ('kewa', '') should be kewha - Done - DELETE
+Check CaSe / Macrons / Variant Number ('Kopiri', '') should be Kōpiri - Done - DELETE
+Check CaSe / Macrons / Variant Number ('kaka', 3) ok - mistake in HPK - Left as is in spreadsheet
+Check CaSe / Macrons / Variant Number ('kōina', '') ok - mistake in HPK - Left as is in spreadsheet
+Check CaSe / Macrons / Variant Number ('korī', '') should be kōri - Done - DELETE
+Check CaSe / Macrons / Variant Number ('kowanu', '') should be kōwanu - Done - DELETE
+Check CaSe / Macrons / Variant Number ('kēke', 2) should be kēkē - Done - DELETE
+Check CaSe / Macrons / Variant Number ('kēa', '') should be kēā - Done - DELETE
+Check CaSe / Macrons / Variant Number ('kUweto', '') should be kūweto - Done - DELETE
+Check CaSe / Macrons / Variant Number ('karari', '') should be kararī - Done - DELETE
+Check CaSe / Macrons / Variant Number ('korē', '') should be kōrē - Done - DELETE
+Check CaSe / Macrons / Variant Number ('kēke', 1)  should be kēkē - Done
+
+I also need to delete files and rerun 'get html from filesystem'
+happy . . . ('kīhai ki', '')
