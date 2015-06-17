@@ -1,0 +1,22 @@
+[default]
+a_excel_filename = hpk_headwords_a.xlsx
+ā_excel_filename = hpk_headwords_a.xlsx
+e_excel_filename = hpk_headwords_e.xlsx
+ē_excel_filename = hpk_headwords_e.xlsx
+h_excel_filename = hpk_headwords_h.xlsx
+i_excel_filename = hpk_headwords_i.xlsx
+ī_excel_filename = hpk_headwords_i.xlsx
+k_excel_filename = hpk_headwords_k.xlsx
+m_excel_filename = hpk_headwords_m.xlsx
+
+[graham-laptop]
+#have a / at the end of folder names
+excel_folder = /home/graham/PythonProjects/rārangi_kupu/head_words_excel/
+url1OF3 = http://www.korero.maori.nz/forspeakers/patakakupu
+url2OF3 = ?_start=
+url3OF3 = &print=Rapua&_lookup=long&_func=lookup&_print=print
+ua = Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36
+
+#The dump path cannot be underneath Dropbox as dropbox does not handle filenames
+#that only differ by case.
+dump_path = /home/graham/PythonProjects/rārangi_kupu/web_dumps_html/
