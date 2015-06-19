@@ -9,6 +9,7 @@ i_excel_filename = hpk_headwords_i.xlsx
 k_excel_filename = hpk_headwords_k.xlsx
 m_excel_filename = hpk_headwords_m.xlsx
 n_excel_filename = hpk_headwords_n.xlsx
+ng_excel_filename = hpk_headwords_ng.xlsx
 
 [graham-laptop]
 #have a / at the end of folder names
