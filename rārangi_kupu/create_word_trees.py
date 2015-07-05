@@ -20,6 +20,9 @@ def create_word_trees(letter):
     human readable). 
     '''
 
+    #word trees
+    word_trees={}
+
     #create named tuple to store unique keys
     Word_ID = namedtuple('Word_ID', 'root trunk branch twig')
 
@@ -30,8 +33,6 @@ def create_word_trees(letter):
 
     #get all the files in the target folder
     html_file_names = os.listdir(target_folder)
-
-    temp_dict = {}
 
     #open the html files for the letter
     for fyle in html_file_names:
@@ -84,12 +85,38 @@ def create_word_trees(letter):
  
                 word_id = Word_ID(root, trunk, branch, twig)
 
-                leaves = {}
-                atua = get_atua(raw_branch_or_twig)
-                #temp_dict[word_id] = 'banana'
-        #pprint.pprint (temp_dict)
+                leaves = {} #9 keys
+                atua = get_atua(raw_branch_or_twig) #1
+                leaves["atua"] = atua
 
-    
+                reo_kē = is_reo_kē(raw_branch_or_twig) #2
+                leaves["reo_kē"] = reo_kē
+
+                hou = is_hou(raw_branch_or_twig) #3
+                leaves["hou"] = hou
+
+                whakamāoritanga = get_whakamāoritanga(raw_branch_or_twig) #4
+                leaves["whakamāoritanga"] = whakamāoritanga
+
+                tauira = get_tauira(raw_branch_or_twig) #5
+                leaves["tauira"] = tauira
+
+                whakamahinga_kupu_1 = get_primarywordclass(raw_branch_or_twig) #6
+                leaves["whakamahinga_kupu_1"] = whakamahinga_kupu_1
+
+                whakamahinga_kupu_2 = get_secondarywordclasses(raw_branch_or_twig) #7
+                leaves["whakamahinga_kupu_2"] = whakamahinga_kupu_2
+
+                pīmuri_whakahāngū = get_passives(raw_branch_or_twig) #8
+                leaves["pīmuri_whakahāngū"] = pīmuri_whakahāngū
+
+                pīmuri_whakaingoa = get_nominalisations(raw_branch_or_twig) #9
+                leaves["pīmuri_whakaingoa"] = pīmuri_whakaingoa
+
+                word_trees[word_id] = leaves
+
+                print(word_id)
+                pprint.pprint(leaves)
 
 def get_raw_branches_and_twigs(soup, headword_tag):
     '''
@@ -106,11 +133,25 @@ def get_raw_branches_and_twigs(soup, headword_tag):
             print('*****processing********')
             #print (mini_soup)
             print('*****processing********')
-            #Have we gone too far?
+            #Have we gone too far? 
+            #In relation to what?
+            #The end of the html 
             too_far = False
-            if not mini_soup.find(class_="variantno") is None:
-                #we have found the next variantno in our mini_soup
-                too_far = True 
+
+            #look for variant numbers (roots) in our mini_soup
+            variantno_soup = mini_soup.find_all(class_="variantno")
+            if not variantno_soup is None:
+                #we have at least one variantno
+                #See if we have any variantnos outside the tuakana/teina section
+                #because the ones (if any) in the tuakana/teina section don't count
+                for variantno_tag in variantno_soup:
+                    variantno_tag_in_tuakana_teina_section = False
+                    for tag in variantno_tag.parents:
+                        if tag.name == "nobr":
+                            variantno_tag_in_tuakana_teina_section = True
+                    if not variantno_tag_in_tuakana_teina_section:
+                        too_far = True
+            
             if not mini_soup.find(class_="headword") is None:
                 #we have found the next headword in our mini_soup
                 too_far = True
@@ -154,8 +195,8 @@ def get_branch_number(raw_branch_or_twig):
         #we have found at least one branch
         assert raw_branch_or_twig.find(class_="subentry") is None, \
                "We have found a twig mixed in with a branch"
-        assert len(raw_branch_or_twig.find_all(class_="majsense")) == 1, \
-               "More than 1 branch found where there must only be 1"
+        #assert len(raw_branch_or_twig.find_all(class_="majsense")) == 1, \
+        #"More than 1 branch found where there must only be 1"
         is_branch = True
     else:
         #Not a branch! Is it a twig?
@@ -183,9 +224,132 @@ def get_branch_number(raw_branch_or_twig):
     if is_twig:
         return None
 
-def get_atua:
-    pass
+def get_atua(raw_branch_or_twig):
+    '''
+    Given either a raw branch or twig
+    Return a list of the atua
+    Expecting there to be atua.
+    If not some error will be thrown
+    '''
+    atua_soup = raw_branch_or_twig.find(class_="atua")
+    atua = atua_soup.string.split(',')
+    atua = [x.strip() for x in atua]
+    return atua
 
+def is_reo_kē(raw_branch_or_twig):
+    '''
+    Given either a raw branch or twig
+    Return True (reo kē) or False
+    '''
+    usage_soup = raw_branch_or_twig.find(class_="usage")
+    if usage_soup:
+        if 'reo_kē' in usage_soup.string:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+def is_hou(raw_branch_or_twig):
+    '''
+    Given either a raw branch or twig
+    Return True (hou) or False
+    '''
+    usage_soup = raw_branch_or_twig.find(class_="usage")
+    if usage_soup:
+        if 'hou' in usage_soup.string:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+def get_whakamāoritanga(raw_branch_or_twig):
+    '''
+    Given either a raw branch or twig
+    Return the whakamāortianga
+    Expecting there to be a definition.
+    If not some error will be thrown
+    '''
+    whakamāoritanga_soup = raw_branch_or_twig.find(class_="definition")
+    return whakamāoritanga_soup.string
+
+def get_tauira(raw_branch_or_twig):
+    '''
+    Given either a raw branch or twig
+    Return the tauira
+    Expecting there to be at least one.
+    If not some error will be thrown (NoneType object is not iterable)
+
+    There is the possibility that within the example there is another tag 
+    examplehighlight, which means a little more complexity.
+    '''
+    tauira = []
+    tauira_soup = raw_branch_or_twig.find_all(class_="example")
+    for tauira_mini_soup in tauira_soup:
+        tauira_mini_soup_string = tauira_mini_soup.string
+        if not tauira_mini_soup_string:
+            #cannot find tauira text due to assumed presence of examplehighlight tag
+            tauira_parts = list(tauira_mini_soup.strings)
+            tauira_mini_soup_string = ''.join(tauira_parts)
+        tauira.append(tauira_mini_soup_string)
+    return tauira
+
+def get_primarywordclass(raw_branch_or_twig):
+    '''
+    Given either a raw branch or twig
+    Return the primary word class
+    It is possible that there may be no primary word class 
+    (Don't really know why but it certainly happens in the dictionary)
+    I don't know if there can be more than one
+    but a return value of None will possibly point to this.
+    '''
+    primarywordclass_soup = raw_branch_or_twig.find(class_="primarywordclass")
+    if primarywordclass_soup:
+        return primarywordclass_soup.string
+    else:
+        return ""
+
+def get_secondarywordclasses(raw_branch_or_twig):
+    '''
+    Given either a raw branch or twig
+    Return the secondary word class(es)
+    It is possible that there may be no secondary word class 
+    There can be more than one.
+    '''
+    secondary_word_classes = []
+    secondarywordclass_soup = raw_branch_or_twig.find(class_="secondarywordclass")
+    if secondarywordclass_soup:
+        secondary_word_classes = list(secondarywordclass_soup.strings) 
+        # remove ', ' list entries     
+        secondary_word_classes = [x for x in secondary_word_classes if x != ", "]
+    return secondary_word_classes
+
+def get_passives(raw_branch_or_twig):
+    '''
+    Given either a raw branch or twig
+    Return the 'passives' as a list
+    There may be 0, 1 or more
+    We will assume entries distinguished with a space
+    '''
+    passives = []
+    passives_soup = raw_branch_or_twig.find(class_='passivised')
+    if passives_soup:
+        passives = passives_soup.string.split(" ")
+    return passives
+
+def get_nominalisations(raw_branch_or_twig):
+    '''
+    Given either a raw branch or twig
+    Return the 'nominalisations' as a list
+    There may be 0, 1 or more
+    We will assume entries distinguished with a space
+    '''
+    nominalisations = []
+    nominalisations_soup = raw_branch_or_twig.find(class_='nominalised')
+    if nominalisations_soup:
+        nominalisations = nominalisations_soup.string.split(" ")
+    return nominalisations        
 
 if __name__ == '__main__':
     import pū
