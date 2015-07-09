@@ -56,12 +56,13 @@ def create_word_trees(letter):
             #but in a form that needs alot of processing
             all_raw_branches_and_twigs = get_raw_branches_and_twigs(soup, headword_tag)
 
+            print(' ')
             print('Headword', root_counter + 1)
             print('# Branches and Twigs', len(all_raw_branches_and_twigs))
             for raw_branch_or_twig in all_raw_branches_and_twigs:
-                print ("++++++++++++FINAL++++++++++++++")
+                #print ("++++++++++++FINAL++++++++++++++")
                 #print (str(raw_branch_or_twig)[:])
-                print ("++++++++++++FINAL++++++++++++++")
+                #print ("++++++++++++FINAL++++++++++++++")
                 #populate the dictionary key for each word tree
                 root = root_counter + 1
 
@@ -118,6 +119,7 @@ def create_word_trees(letter):
                 print(word_id)
                 pprint.pprint(leaves)
 
+
 def get_raw_branches_and_twigs(soup, headword_tag):
     '''
     Given the headword tag
@@ -130,9 +132,9 @@ def get_raw_branches_and_twigs(soup, headword_tag):
         ns = ns.next_sibling
         if isinstance(ns, Tag):
             mini_soup = BeautifulSoup(str(ns))
-            print('*****processing********')
+            #print('*****processing********')
             #print (mini_soup)
-            print('*****processing********')
+            #print('*****processing********')
             #Have we gone too far? 
             #In relation to what?
             #The end of the html 

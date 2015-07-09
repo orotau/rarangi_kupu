@@ -11,11 +11,13 @@ m_excel_filename = hpk_headwords_m.xlsx
 n_excel_filename = hpk_headwords_n.xlsx
 ng_excel_filename = hpk_headwords_ng.xlsx
 o_excel_filename = hpk_headwords_o.xlsx
+p_excel_filename = hpk_headwords_p.xlsx
 
 [graham-laptop]
 #have a / at the end of folder names
 excel_folder = /home/graham/PythonProjects/rārangi_kupu/head_words_excel/
-url1OF3 = http://www.korero.maori.nz/forspeakers/patakakupu
+#url1OF3 = http://www.korero.maori.nz/forspeakers/patakakupu #before taken off line in July 2015
+url1OF3 = http://admin.korero.maori.nz/forspeakers/patakakupu
 url2OF3 = ?_start=
 url3OF3 = &print=Rapua&_lookup=long&_func=lookup&_print=print
 ua = Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36
