@@ -13,6 +13,8 @@ ng_excel_filename = hpk_headwords_ng.xlsx
 o_excel_filename = hpk_headwords_o.xlsx
 p_excel_filename = hpk_headwords_p.xlsx
 r_excel_filename = hpk_headwords_r.xlsx
+t_excel_filename = hpk_headwords_t.xlsx
+u_excel_filename = hpk_headwords_u.xlsx
 
 [graham-laptop]
 #have a / at the end of folder names
