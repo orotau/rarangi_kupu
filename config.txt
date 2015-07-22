@@ -16,6 +16,7 @@ r_excel_filename = hpk_headwords_r.xlsx
 t_excel_filename = hpk_headwords_t.xlsx
 u_excel_filename = hpk_headwords_u.xlsx
 w_excel_filename = hpk_headwords_w.xlsx
+wh_excel_filename = hpk_headwords_wh.xlsx
 
 [graham-laptop]
 #have a / at the end of folder names
