@@ -45,7 +45,7 @@ def create_word_trees(letter):
         #narrow down to the headword that matches the html document name
         headword = fyle.split('.')[0] #get rid of the .html file extension
         headword_tags = [x for x in all_headword_tags if x.string==headword]
-        pprint.pprint(headword_tags) #debug
+        #pprint.pprint(headword_tags) #debug
 
         #We are *assuming* that the headword tags are ordered correctly
         #We may have to revisit this later
@@ -56,9 +56,9 @@ def create_word_trees(letter):
             #but in a form that needs alot of processing
             all_raw_branches_and_twigs = get_raw_branches_and_twigs(soup, headword_tag)
 
-            print(' ')
-            print('Headword', root_counter + 1)
-            print('# Branches and Twigs', len(all_raw_branches_and_twigs))
+            #print(' ')
+            #print('Headword', root_counter + 1)
+            #print('# Branches and Twigs', len(all_raw_branches_and_twigs))
             for raw_branch_or_twig in all_raw_branches_and_twigs:
                 #print ("++++++++++++FINAL++++++++++++++")
                 #print (str(raw_branch_or_twig)[:])
@@ -116,8 +116,12 @@ def create_word_trees(letter):
 
                 word_trees[word_id] = leaves
 
-                print(word_id)
-                pprint.pprint(leaves)
+                #print(word_id)
+                #pprint.pprint(leaves)
+                #print('-------------------------------')
+
+    for key in word_trees.keys():
+        print (key)
 
 
 def get_raw_branches_and_twigs(soup, headword_tag):

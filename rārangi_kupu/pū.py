@@ -13,4 +13,8 @@ macronised_vowels = ('ā', 'ē', 'ī', 'ō', 'ū',
 consonants = ('h', 'k', 'm', 'n', 'p', 'r', 't', 'w',
               'H', 'K', 'M', 'N', 'P', 'R', 'T', 'W')
 
+legal_punctuation = (' ', '-')
+
 all_letters = digraphs + vowels + macronised_vowels + consonants
+
+all_legal_characters = all_letters + legal_punctuation
