@@ -1,24 +1,5 @@
 '''What is going on - this needs to be described..
-   Strange behaviour - need to document purpose!
 
-   A word will be initialised if the following conditions hold
-
-   1) The word is non-compound (does *not* contain legal punctuation)
-   AND
-      The word only contains legal letters
-   AND
-      Every consonant is followed by a vowel
-
-   or
-
-   2) The word is compound (does contain legal punctuation)
-   AND
-      Each word passes all of test 1) above
-
-   I would like to make the compound words part of a different class
-   but I don't know how to do that yet....
-
-   also if we pass in '' what should happen?
 '''
 import unicodedata
 import re
@@ -51,23 +32,31 @@ class MaoriWord():
 
         self.word = word
 
-    def getKey(self):
-        #Key 1 - Letters
-        key1 = self.demacronise()
-        key1 = key1.lower()
-        key1 = MaoriWord(key1).aslist()        
-
-        #Key 2 - Macrons
-        key2 = self.maori_word.lower()
-        key2 = MaoriWord(key2).aslist()
-
-        #Key 3 - Case
-        key3 = self.aslist() #upper case first (as per HPK)
-      
-        return key1, key2, key3
-
     def __repr__ (self):
         return self.word
+
+
+def _get_key(word_input):
+
+    #Ensure we are sorting well structured words
+    word = MaoriWord(word_input).word
+
+    #Remove any punctuation
+    word = _remove_punctuation(word)
+
+    #Key 1 - Letters
+    key1 = _demacronise(word)
+    key1 = key1.lower()
+    key1 = _aslist(key1)        
+
+    #Key 2 - Macrons
+    key2 = word.lower()
+    key2 = _aslist(key2)
+
+    #Key 3 - Case
+    key3 = _aslist(word) #upper case first (as per HPK)
+  
+    return key1, key2, key3
 
 def _isalllegalcharacters(word):
     if set(_aslist(word)).issubset(pū.all_legal_characters):
@@ -143,6 +132,8 @@ def _demacronise(word):
     demacronised_string = word    
     return demacronised_string
 
-if __name__ == '__main__':
-    print(MaoriWord('hj'), 'main')
+def _remove_punctuation(word):
+    for p in pū.legal_punctuation:
+        word = word.replace(p, '')
+    return word
 

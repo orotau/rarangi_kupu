@@ -4,3 +4,4 @@
 .DS_Store
 .coverage
 *~
+web_dumps_html/test/
