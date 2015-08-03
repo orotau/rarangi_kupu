@@ -26,7 +26,7 @@ def validate(letter):
 
     #get all the files in the target folder
     html_file_names = os.listdir(target_folder)
-    html_file_names_no_extension = set([x.split('.')[0] for x in html_file_names])
+    html_file_names_no_extension = set([x.split('.html')[0] for x in html_file_names])
 
     #Does every unique headword have a corresponding html file?
     if unique_headwords.issubset(html_file_names_no_extension):

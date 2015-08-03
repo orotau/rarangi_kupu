@@ -1,9 +1,25 @@
-'''What is going on - this needs to be described..
+'''
+This module contains a class and some functions
+I wasn't sure whether to put the function inside the class
+or not.
+I got very confused and so ended up putting the functions outside
+the class.
+I started them with an underscore but don't know if that was the
+'right' thing to do. Some idea of 'only to be used internally'
+There is considerable testing for this module made using
+pytest which was 
+
+a) Easy to use
+b) Helped me to see that I need to rearrange my code because
+it was hard to test.
+
+I am at the point now 1 August 2015 where I can safely give
+the sorting information to the Unicode people.
 
 '''
 import unicodedata
 import re
-from rārangi_kupu import pū
+import pū
 
 
 class MaoriWord():
@@ -36,7 +52,7 @@ class MaoriWord():
         return self.word
 
 
-def _get_key(word_input):
+def _get_list_sort_key(word_input):
 
     #Ensure we are sorting well structured words
     word = MaoriWord(word_input).word
@@ -57,6 +73,26 @@ def _get_key(word_input):
     key3 = _aslist(word) #upper case first (as per HPK)
   
     return key1, key2, key3
+
+
+def _get_dict_sort_key(named_tuple_input):
+
+    '''
+    This method takes as input a named tuple in the form
+    Word_ID(root, trunk, branch, twig)
+    and returns a key suitable for sorting dictionary
+    entries as they are in HPK
+
+    The key being
+    list sort key, root number, branch number
+
+    '''    
+    word_form = named_tuple_input.trunk
+    root_number = named_tuple_input.root
+    branch_number = named_tuple_input.branch
+    list_sort_key = _get_list_sort_key(word_form)
+    return list_sort_key, root_number, branch_number
+    
 
 def _isalllegalcharacters(word):
     if set(_aslist(word)).issubset(pū.all_legal_characters):

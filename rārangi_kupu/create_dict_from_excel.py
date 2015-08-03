@@ -22,7 +22,7 @@ class SpreadSheet():
         cf = config.ConfigFile()
         wb_path = (cf.configfile[cf.computername]['excel_folder'] +
                    cf.configfile['default'][letter + '_excel_filename'])
-        print(wb_path)
+        # print(wb_path) debug
         self.wb = open_workbook(wb_path)
 
     def pulldata(self):

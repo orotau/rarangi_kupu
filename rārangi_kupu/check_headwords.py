@@ -74,9 +74,6 @@ def validate(letter):
             #print(keys_on_page)
             if k in keys_on_page:
                 pass
-            elif (k[0] + " . . .", k[1]) in keys_on_page:
-                #Kīanga
-                print("happy . . .", k)
             else:
                 #found a match of sorts but not exact match
                 #CaSe or macrons or variant will be the issue

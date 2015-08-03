@@ -43,7 +43,7 @@ def create_word_trees(letter):
         all_headword_tags = soup.find_all(class_="headword")
 
         #narrow down to the headword that matches the html document name
-        headword = fyle.split('.')[0] #get rid of the .html file extension
+        headword = fyle.split('.html')[0] #get rid of the .html file extension
         headword_tags = [x for x in all_headword_tags if x.string==headword]
         #pprint.pprint(headword_tags) #debug
 
@@ -120,8 +120,7 @@ def create_word_trees(letter):
                 #pprint.pprint(leaves)
                 #print('-------------------------------')
 
-    for key in word_trees.keys():
-        print (key)
+    return word_trees
 
 
 def get_raw_branches_and_twigs(soup, headword_tag):
@@ -360,6 +359,8 @@ def get_nominalisations(raw_branch_or_twig):
 if __name__ == '__main__':
     import pū
     import sys
+    import maoriword as mw
+    
     try:
         first_argument = sys.argv[1]
     except IndexError:
@@ -368,10 +369,14 @@ if __name__ == '__main__':
         sys.exit()
 
     if first_argument in pū.all_letters:
-        create_word_trees(first_argument)
+        word_trees = create_word_trees(first_argument)
         print ('Done - thanks')
     elif first_argument == 'test':
-        create_word_trees("test")
+        word_trees = create_word_trees("test")
     else:
         print ("The first argument must be a Māori letter")
         sys.exit()
+
+    if word_trees:
+        for key in sorted(word_trees.keys(), key=mw._get_dict_sort_key):
+            print (key) 
