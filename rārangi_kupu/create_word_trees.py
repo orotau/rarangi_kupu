@@ -14,10 +14,14 @@ def create_word_trees(letter):
     1. root - A digit
     2. trunk - A word form such as 'hua'
     3. branch - A digit
-    4. twig - null (will be a digit for 'sub entries')
+    4. twig - True or False
 
-    The 'word trees' will be saved as a json file (because its
-    human readable). 
+    I found at least one twig with a duplicate form 'kai wētā'
+    So changed the way that 'twig' works
+
+    False if it is a branch
+    1 for twig 1, 2 for twig 2, etc
+
     '''
 
     #word trees
@@ -45,7 +49,7 @@ def create_word_trees(letter):
         #narrow down to the headword that matches the html document name
         headword = fyle.split('.html')[0] #get rid of the .html file extension
         headword_tags = [x for x in all_headword_tags if x.string==headword]
-        #pprint.pprint(headword_tags) #debug
+        pprint.pprint(headword_tags) #debug
 
         #We are *assuming* that the headword tags are ordered correctly
         #We may have to revisit this later
@@ -72,7 +76,7 @@ def create_word_trees(letter):
                     #we have a branch
                     trunk = headword
                     branch = branch_number
-                    twig = False
+                    twig = False #=0 used below
 
                     #we need to have available the branch number for the twig
                     #We are assuming that the first time through we must have a branch
@@ -82,7 +86,7 @@ def create_word_trees(letter):
                     #we have a twig
                     trunk = raw_branch_or_twig.find(class_="subentry").string
                     branch = branch_number_for_twig
-                    twig = True #assuming there can only ever be one twig per branch
+                    twig = twig + 1 #False equates to 0
  
                 word_id = Word_ID(root, trunk, branch, twig)
 
@@ -114,9 +118,15 @@ def create_word_trees(letter):
                 pīmuri_whakaingoa = get_nominalisations(raw_branch_or_twig) #9
                 leaves["pīmuri_whakaingoa"] = pīmuri_whakaingoa
 
-                word_trees[word_id] = leaves
+                if word_id in word_trees:
+                    #major problem the key already exists!
+                    #logic problem - revisit drawing board!
+                    print ('key', word_id, 'already exists!')
+                    raise ValueError
+                else:                
+                    word_trees[word_id] = leaves
 
-                #print(word_id)
+                #print(word_id, "durp")
                 #pprint.pprint(leaves)
                 #print('-------------------------------')
 
@@ -183,14 +193,15 @@ def get_branch_number(raw_branch_or_twig):
     this function examines the raw_branch_or_twig passed
     returns the branch number if a branch
     returns None if it is a twig
-
-    Quality control on the 'raw_branch_or_twig' passed 
-    raises a NameError if neither branch or twig
-    raises assert errors if any of
-    2 or more branches mixed, 
-    2 or more twigs mixed
-    branches and twigs mixed
     '''
+
+    #remove the tuakana/teina section if it exists
+    #The nobr tag is used to deliniate this
+    try:
+        raw_branch_or_twig.nobr.decompose()
+    except AttributeError:
+        #there is no tuakana/teina section
+        pass
 
     #do we have a branch or a twig or a problem!
     is_branch = False #initialise
@@ -198,22 +209,16 @@ def get_branch_number(raw_branch_or_twig):
     branch_or_twig = raw_branch_or_twig.find(class_="majsense")  
     if not branch_or_twig is None:
         #we have found at least one branch
-        assert raw_branch_or_twig.find(class_="subentry") is None, \
-               "We have found a twig mixed in with a branch"
-        #assert len(raw_branch_or_twig.find_all(class_="majsense")) == 1, \
-        #"More than 1 branch found where there must only be 1"
         is_branch = True
     else:
         #Not a branch! Is it a twig?
         branch_or_twig = raw_branch_or_twig.find(class_="subentry")
         if not branch_or_twig is None:
             #We have found at least one twig
-            assert len(raw_branch_or_twig.find_all(class_="subentry")) == 1, \
-                   "More than 1 twig found where there must only be 1"
             is_twig = True
         else:
             #Neither branch nor twig!
-            raise NameError('Neither branch nor twig found')        
+            raise NameError('Neither branch nor twig found')
     
     if is_branch:
         branch = branch_or_twig    
@@ -360,6 +365,7 @@ if __name__ == '__main__':
     import pū
     import sys
     import maoriword as mw
+    import create_dict_from_excel as cdfe
     
     try:
         first_argument = sys.argv[1]
@@ -377,6 +383,32 @@ if __name__ == '__main__':
         print ("The first argument must be a Māori letter")
         sys.exit()
 
+    #check we have the keys that match those from cdfe
     if word_trees:
-        for key in sorted(word_trees.keys(), key=mw._get_dict_sort_key):
-            print (key) 
+        excel_words_dict_keys = cdfe.SpreadSheet(sys.argv[1]).pulldata().keys()
+        excel_words = [list(x) for x in list(excel_words_dict_keys)]
+        excel_words_tree_style = [[x,1] if y=='' else [x,y] for x,y in excel_words]
+        excel_words_tree_style = tuple((y,x) for x,y in excel_words_tree_style)
+        #print(excel_words_tree_style)
+
+        word_tree_words = [(key.root, key.trunk) if key.twig is False else (None,None) for key in word_trees.keys()]
+        word_tree_words = list(set(word_tree_words))
+        word_tree_words = tuple((x,y) for x,y in word_tree_words)
+        #print(word_tree_words)
+
+        #print (set.intersection(set(excel_words_tree_style), set(word_tree_words)))
+
+        print ("In excel but not in the word tree")
+        print (list(set(excel_words_tree_style) - set(word_tree_words)))
+
+        print ("In the word tree but not excel - VERY unlikely")
+        print (list(set(word_tree_words) - set(excel_words_tree_style)))
+
+        '''         
+        count = 0
+        for key in sorted(word_trees.keys(), key = mw._get_dict_sort_key)
+            if key.branch == 1 and key.twig == False:
+                count = count + 1
+                print (count, key)
+        '''
+

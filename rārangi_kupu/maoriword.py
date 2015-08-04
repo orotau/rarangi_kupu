@@ -20,6 +20,7 @@ the sorting information to the Unicode people.
 import unicodedata
 import re
 import pū
+import hpk
 
 
 class MaoriWord():
@@ -28,22 +29,27 @@ class MaoriWord():
 
         if word.strip() != word:
             #the word has leading and/or trailing whitespace
+            print ('1', word)
             raise ValueError
 
         if word.strip() == '':
             #empty string
+            print ('2', word)
             raise ValueError
 
         #check that we have all legal characters
         if not _isalllegalcharacters(word):
+            print ('3', word)
             raise ValueError
 
         #split by punctuations
         for part in _word_split(word):
             #check it ends in a vowel
             if not _endsinvowel(part):
+                print ('4', word)
                 raise ValueError
             if not _isconsonantvowel(part):
+                print ('5', word)
                 raise ValueError
 
         self.word = word
@@ -88,6 +94,23 @@ def _get_dict_sort_key(named_tuple_input):
 
     '''    
     word_form = named_tuple_input.trunk
+
+    #if we have a prefix remove the - at the end of it
+    if word_form.endswith(hpk.end_dash):
+        word_form = word_form[:-1]
+  
+    #if we have a kīanga remove the ellipsis at the end of it
+    if word_form.endswith(hpk.ellipsis):
+        word_form = word_form[:-6]
+
+    #if we have kawititanga o te ringa(ringa) remove the (ringa)
+    if word_form == hpk.kotrr:
+        word_form = word_form[:-7]
+
+    #if we have E koe (E koe e koe) remove the  (E koe e koe)
+    if word_form == hpk.ekekek:
+        word_form = word_form[:-14] #including the space before the bracket
+
     root_number = named_tuple_input.root
     branch_number = named_tuple_input.branch
     list_sort_key = _get_list_sort_key(word_form)
