@@ -31,4 +31,4 @@ ua = Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) 
 #that only differ by case.
 dump_path = /home/graham/PythonProjects/rārangi_kupu/web_dumps_html/
 
-pickle_path = /home/graham/PythonProjects/rārangi_kupu/pickles/
+json_path = /home/graham/PythonProjects/rārangi_kupu/word_trees/

@@ -104,9 +104,6 @@ def _get_dict_sort_key(named_tuple_input):
 
     '''
     word_form = named_tuple_input.trunk
-    #This is not being triggered at the moment
-    if '\xa0' in word_form:
-        print('**********************************************', word_form)
 
     #if we have a suffix remove the - at the end of it
     if word_form.endswith(hpk.end_dash):
@@ -117,7 +114,6 @@ def _get_dict_sort_key(named_tuple_input):
         word_form = word_form[1:]
   
     #if we have a kīanga remove the ellipsis at the end of it
-    #if word_form.replace('\xa0',' ').endswith(hpk.ellipsis):
     if word_form.endswith(hpk.ellipsis):
         word_form = word_form[:-6]
 

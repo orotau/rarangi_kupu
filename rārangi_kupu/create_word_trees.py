@@ -35,8 +35,8 @@ def create_word_trees(letter):
     dump_folder = (cf.configfile[cf.computername]['dump_path'])
     target_folder = dump_folder + letter + "/"
 
-    #get all the files in the target folder
-    html_file_names = os.listdir(target_folder)
+    #get all the files in the target folder (exclude backup files, ending with tilde)
+    html_file_names = [f for f in os.listdir(target_folder) if not f.endswith('~')]
 
     #open the html files for the letter
     for fyle in html_file_names:
@@ -372,9 +372,10 @@ def get_nominalisations(raw_branch_or_twig):
     return nominalisations        
 
 if __name__ == '__main__':
-    import pū
     import sys
     import config
+    import simplejson as json
+    import pū
     import maoriword as mw
     import create_dict_from_excel as cdfe
     
@@ -419,8 +420,17 @@ if __name__ == '__main__':
         '''
         count = 0
         for key in sorted(word_trees.keys(), key = mw._get_dict_sort_key):
-            if key.branch_number <= 1 and key.twig is False and word_trees[key]["hou"] is True:
-                count = count + 1
-                print (count, key, word_trees[key]["hou"])
+            #if key.branch_number <= 1 and key.twig is False and word_trees[key]["hou"] is True:
+            count = count + 1
+            print (count, tuple(key))
 
+            '''
+            # json the dictionary
+            cf = config.ConfigFile()
+            json_path = (cf.configfile[cf.computername]['json_path'])
+            json_filename = first_argument + ".json"
+            full_json_path = json_path + json_filename
+            with open(full_json_path, 'w') as handle:
+                json.dump(word_trees, handle)
+            '''
 
