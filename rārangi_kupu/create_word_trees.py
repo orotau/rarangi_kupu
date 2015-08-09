@@ -28,7 +28,7 @@ def create_word_trees(letter):
     word_trees={}
 
     #create named tuple to store unique keys
-    Word_ID = namedtuple('Word_ID', 'root trunk branch twig')
+    Word_ID = namedtuple('Word_ID', 'root_number trunk branch_number twig twig_number')
 
     # get the dump path
     cf = config.ConfigFile()
@@ -56,39 +56,34 @@ def create_word_trees(letter):
 
         for root_counter, headword_tag in enumerate(headword_tags):
             #get all the raw branches and twigs (if there are any) for each headword_tag
-            #At this stage a raw branch / twig contains all the information we need
-            #but in a form that needs alot of processing
             all_raw_branches_and_twigs = get_raw_branches_and_twigs(soup, headword_tag)
 
-            #print(' ')
-            #print('Headword', root_counter + 1)
-            #print('# Branches and Twigs', len(all_raw_branches_and_twigs))
-            for raw_branch_or_twig in all_raw_branches_and_twigs:
-                #print ("++++++++++++FINAL++++++++++++++")
-                #print (str(raw_branch_or_twig)[:])
-                #print ("++++++++++++FINAL++++++++++++++")
-                #populate the dictionary key for each word tree
-                root = root_counter + 1
+            root_number = root_counter + 1
+            for counter, raw_branch_or_twig in enumerate(all_raw_branches_and_twigs):
 
-                #trunk, branch and twig
+                #trunk, branch, twig and twig_number
+                trunk = headword
                 branch_number = get_branch_number(raw_branch_or_twig)
+
                 if not branch_number is None:
                     #we have a branch
-                    trunk = headword
-                    branch = branch_number
-                    twig = False #=0 used below
-
-                    #we need to have available the branch number for the twig
-                    #We are assuming that the first time through we must have a branch
-                    #serves as a check of that (I think)
+                    twig = False
+                    twig_number = 0
                     branch_number_for_twig = branch_number
                 else:
                     #we have a twig
-                    trunk = raw_branch_or_twig.find(class_="subentry").string
-                    branch = branch_number_for_twig
-                    twig = twig + 1 #False equates to 0
+                    twig = raw_branch_or_twig.find(class_="subentry").string
+
+                    if counter == 0:
+                        #no branch at all
+                        branch_number = 0
+                        twig_number = 0
+                    else:
+                        branch_number =  branch_number_for_twig
+
+                    twig_number = twig_number + 1
  
-                word_id = Word_ID(root, trunk, branch, twig)
+                word_id = Word_ID(root_number, trunk, branch_number, twig, twig_number)
 
                 leaves = {} #9 keys
                 atua = get_atua(raw_branch_or_twig) #1
@@ -122,7 +117,10 @@ def create_word_trees(letter):
                     #major problem the key already exists!
                     #logic problem - revisit drawing board!
                     print ('key', word_id, 'already exists!')
-                    raise ValueError
+                    if word_id.trunk == 'Pūtahi-nui-o-Rehua':
+                        pass #error in HPK
+                    else:
+                        raise ValueError
                 else:                
                     word_trees[word_id] = leaves
 
@@ -135,30 +133,34 @@ def create_word_trees(letter):
 
 def get_raw_branches_and_twigs(soup, headword_tag):
     '''
-    Given the headword tag
-    returns a list of all of its 'raw branches'
+    Given the headword tag returns a list of all of its 'raw branches' and 'raw twigs'
+    
+    <p style="margin-top: 0px; margin-bottom: 0px"> HEADWORD TAG'S PARENT
+        <span class="headword">ehuehu</span> THIS IS AN EXAMPLE OF A HEADWORD TAG (STARTING POINT)
+    </p>
+    <p style="margin-left: 35px; text-indent: -20px; margin-top: 0px"> NEXT SIBLING TAG
+        <A load of html which is the raw branch>
+    </p>
     '''
     raw_branches_and_twigs = []
+
     ns = headword_tag.parent
 
     while True:
         ns = ns.next_sibling
         if isinstance(ns, Tag):
             mini_soup = BeautifulSoup(str(ns))
-            #print('*****processing********')
-            #print (mini_soup)
-            #print('*****processing********')
             #Have we gone too far? 
-            #In relation to what?
-            #The end of the html 
             too_far = False
 
+            #Too far - check 1
             #look for variant numbers (roots) in our mini_soup
             variantno_soup = mini_soup.find_all(class_="variantno")
             if not variantno_soup is None:
-                #we have at least one variantno
-                #See if we have any variantnos outside the tuakana/teina section
-                #because the ones (if any) in the tuakana/teina section don't count
+                #We have at least one variantno
+                #We are only concerned if we have at least one which
+                #is *outside* the tuakana/teina section
+                #If we do, then we have gone 'too far'
                 for variantno_tag in variantno_soup:
                     variantno_tag_in_tuakana_teina_section = False
                     for tag in variantno_tag.parents:
@@ -167,18 +169,21 @@ def get_raw_branches_and_twigs(soup, headword_tag):
                     if not variantno_tag_in_tuakana_teina_section:
                         too_far = True
             
+            #Too far - check 2
             if not mini_soup.find(class_="headword") is None:
                 #we have found the next headword in our mini_soup
                 too_far = True
+
+            #Too far - check 3
             if (mini_soup.p and mini_soup.get_text() == '\n' and
                 len(list(mini_soup.descendants)) == 2):
                 #we have found a <p></p>   assuming at end of document
                 too_far = True           
-            #other 'too far' checks here             
 
             if too_far:
                 break #exit loop
             else:
+                #it's a bona fide raw branch or raw twig
                 raw_branches_and_twigs.append(ns)
 
         else:
@@ -277,12 +282,17 @@ def is_hou(raw_branch_or_twig):
 def get_whakamāoritanga(raw_branch_or_twig):
     '''
     Given either a raw branch or twig
-    Return the whakamāortianga
-    Expecting there to be a definition.
-    If not some error will be thrown
+    Return the whakamāortianga if it exists
+    Return '' and print message otherwise
     '''
+
     whakamāoritanga_soup = raw_branch_or_twig.find(class_="definition")
-    return whakamāoritanga_soup.string
+    try:
+        return whakamāoritanga_soup.string
+    except AttributeError:
+        #there is no definition (p.36 arumoni for example)
+        print ('no defintion in soup' , raw_branch_or_twig)
+        return ''
 
 def get_tauira(raw_branch_or_twig):
     '''
@@ -364,6 +374,7 @@ def get_nominalisations(raw_branch_or_twig):
 if __name__ == '__main__':
     import pū
     import sys
+    import config
     import maoriword as mw
     import create_dict_from_excel as cdfe
     
@@ -385,6 +396,7 @@ if __name__ == '__main__':
 
     #check we have the keys that match those from cdfe
     if word_trees:
+        '''
         excel_words_dict_keys = cdfe.SpreadSheet(sys.argv[1]).pulldata().keys()
         excel_words = [list(x) for x in list(excel_words_dict_keys)]
         excel_words_tree_style = [[x,1] if y=='' else [x,y] for x,y in excel_words]
@@ -404,11 +416,11 @@ if __name__ == '__main__':
         print ("In the word tree but not excel - VERY unlikely")
         print (list(set(word_tree_words) - set(excel_words_tree_style)))
 
-        '''         
-        count = 0
-        for key in sorted(word_trees.keys(), key = mw._get_dict_sort_key)
-            if key.branch == 1 and key.twig == False:
-                count = count + 1
-                print (count, key)
         '''
+        count = 0
+        for key in sorted(word_trees.keys(), key = mw._get_dict_sort_key):
+            if key.branch_number <= 1 and key.twig is False and word_trees[key]["hou"] is True:
+                count = count + 1
+                print (count, key, word_trees[key]["hou"])
+
 

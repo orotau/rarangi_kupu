@@ -17,8 +17,6 @@
          only 1 HTML file will be created (note it could be either
          'Āpotoro.html' or 'āpotoro.html') depending on the order of the
          entries in the python dictionary.
-
-   Also need a testing suite
 '''
 import os.path
 import urllib.request

@@ -26,11 +26,11 @@ def test_word_as_list():
 
 def test_all_legal_characters():
     #check the method that checks that the word consists of legal characters only
-    assert mw._isalllegalcharacters('aeiou') == True
-    assert mw._isalllegalcharacters('whakangākau') == True
-    assert mw._isalllegalcharacters('wakangākau') == True #missing h but all legal characters
-    assert mw._isalllegalcharacters('x') == False
-    assert mw._isalllegalcharacters('whakagākau') == False  #missed the 'n' leaving 'g' which is illegal
+    assert mw._isalllegalletters('aeiou') == True
+    assert mw._isalllegalletters('whakangākau') == True
+    assert mw._isalllegalletters('wakangākau') == True #missing h but all legal characters
+    assert mw._isalllegalletters('x') == False
+    assert mw._isalllegalletters('whakagākau') == False  #missed the 'n' leaving 'g' which is illegal
 
 
 def test_word_split():
@@ -38,6 +38,9 @@ def test_word_split():
     assert mw._word_split('a-ahi') == ['a','ahi']
     assert mw._word_split('a- ahi') == ['a', '', 'ahi'] #repeated separators
 
+
+def test_words_split():
+    assert mw._words_split('Āe, āe') == ['Āe', 'āe']
 
 def test_ends_in_vowel():
     assert mw._endsinvowel('awe') == True
@@ -63,9 +66,9 @@ def test_initialisation():
         mw.MaoriWord('huhy')
 
 
-def test_remove_punctuation():
-    assert mw._remove_punctuation('awe awe') == 'aweawe'
-    assert mw._remove_punctuation('awe-awe') == 'aweawe'
+def test_remove_intra_word_punctuation():
+    assert mw._remove_intra_word_punctuation('awe awe') == 'aweawe'
+    assert mw._remove_intra_word_punctuation('awe-awe') == 'aweawe'
 
 
 def test_demacronise():

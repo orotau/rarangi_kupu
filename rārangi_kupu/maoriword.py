@@ -27,27 +27,30 @@ class MaoriWord():
     
     def __init__(self, word):
 
-        if word.strip() != word:
-            #the word has leading and/or trailing whitespace
-            print ('1', word)
-            raise ValueError
-
-        if word.strip() == '':
-            #empty string
-            print ('2', word)
-            raise ValueError
-
-        #check that we have all legal characters
-        if not _isalllegalcharacters(word):
-            print ('3', word)
-            raise ValueError
-
-        #split by punctuations
+        #split by intra word punctuations
         for part in _word_split(word):
-            #check it ends in a vowel
+
+            #check the part has no leading and/or trailing whitespace
+            if part.strip() != part:
+                print ('1', word)
+                raise ValueError
+
+            #check the part is not the empty string
+            if part.strip() == '':
+                print ('2', word)
+                raise ValueError
+
+            #check that part has all legal letters
+            if not _isalllegalletters(part):
+                print ('3', word, part)
+                raise ValueError
+
+            #check part ends in a vowel
             if not _endsinvowel(part):
                 print ('4', word)
                 raise ValueError
+
+            #check part is consonant vowel
             if not _isconsonantvowel(part):
                 print ('5', word)
                 raise ValueError
@@ -58,13 +61,20 @@ class MaoriWord():
         return self.word
 
 
-def _get_list_sort_key(word_input):
+def _get_list_sort_key(words_input):
 
-    #Ensure we are sorting well structured words
-    word = MaoriWord(word_input).word
+    #Split the words input into a list
+    words_input = _words_split(words_input)
 
-    #Remove any punctuation
-    word = _remove_punctuation(word)
+    #join the words (if they check out ok)
+    words_input_joined = ''
+    for word_input in words_input:
+        #Ensure each word is well structured
+        word = MaoriWord(word_input).word
+        words_input_joined = words_input_joined + word
+
+    #Remove any intra word punctuation
+    word = _remove_intra_word_punctuation(words_input_joined)
 
     #Key 1 - Letters
     key1 = _demacronise(word)
@@ -85,21 +95,29 @@ def _get_dict_sort_key(named_tuple_input):
 
     '''
     This method takes as input a named tuple in the form
-    Word_ID(root, trunk, branch, twig)
+    Word_ID(root_number, trunk, branch_number, twig, twig_number)
     and returns a key suitable for sorting dictionary
     entries as they are in HPK
 
     The key being
-    list sort key, root number, branch number
+    list sort key, root number, branch number, twig_number
 
-    '''    
+    '''
     word_form = named_tuple_input.trunk
+    #This is not being triggered at the moment
+    if '\xa0' in word_form:
+        print('**********************************************', word_form)
 
-    #if we have a prefix remove the - at the end of it
+    #if we have a suffix remove the - at the end of it
     if word_form.endswith(hpk.end_dash):
         word_form = word_form[:-1]
+
+    #if we have a prefix remove the - at the start of it
+    if word_form.startswith(hpk.start_dash):
+        word_form = word_form[1:]
   
     #if we have a kīanga remove the ellipsis at the end of it
+    #if word_form.replace('\xa0',' ').endswith(hpk.ellipsis):
     if word_form.endswith(hpk.ellipsis):
         word_form = word_form[:-6]
 
@@ -109,16 +127,37 @@ def _get_dict_sort_key(named_tuple_input):
 
     #if we have E koe (E koe e koe) remove the  (E koe e koe)
     if word_form == hpk.ekekek:
-        word_form = word_form[:-14] #including the space before the bracket
+        word_form = word_form[:-14] #including the space before the bracket 
 
-    root_number = named_tuple_input.root
-    branch_number = named_tuple_input.branch
+    #if we have 'tahi (i te) tahua' remove the brackets
+    if word_form == hpk.titt:
+        word_form = word_form.replace('(','').replace(')','')
+
+    #if we have 'takahi (i te) whare' remove the brackets
+    if word_form == hpk.titw:
+        word_form = word_form.replace('(','').replace(')','')
+
+    #if we have 'hohou (i te) rongo' remove the brackets
+    if word_form == hpk.hitr:
+        word_form = word_form.replace('(','').replace(')','')
+
+    #if we have 'mataono (rite)' remove the brackets
+    if word_form == hpk.mr:
+        word_form = word_form.replace('(','').replace(')','')
+
+    #if we have 'E nge.' remove the . at the end of it
+    if word_form == hpk.en_dot:
+        word_form = word_form[:-1]    
+
+    root_number = named_tuple_input.root_number
+    branch_number = named_tuple_input.branch_number
+    twig_number = named_tuple_input.twig_number
     list_sort_key = _get_list_sort_key(word_form)
-    return list_sort_key, root_number, branch_number
+    return list_sort_key, root_number, branch_number, twig_number
     
 
-def _isalllegalcharacters(word):
-    if set(_aslist(word)).issubset(pū.all_legal_characters):
+def _isalllegalletters(word):
+    if set(_aslist(word)).issubset(pū.all_letters):
         return True
     else:
         return False
@@ -148,11 +187,18 @@ def _isconsonantvowel(word):
     return return_value
 
 def _word_split(word):
-    '''split the word into 1 or more words separated
-    by the punctuation'''
-    words = (re.split("|".join(lp[0] for lp in pū.legal_punctuation),
-                      word))
-    return words   
+    '''split the word into 1 or more parts separated
+    by the intra word punctuation'''
+    parts = (re.split("|".join(iwp[0] for iwp in pū.intra_word_punctuation),
+             word))
+    return parts
+
+def _words_split(words):
+    '''split the words into a list of individual words'''
+    #This will need to be reworked if we have more than 1 piece of
+    #inter word punctuation
+    words = words.split(pū.inter_word_punctuation)
+    return words
 
 def _aslist(word):
     '''take a string and convert to list - allowing for digraphs'''
@@ -191,8 +237,7 @@ def _demacronise(word):
     demacronised_string = word    
     return demacronised_string
 
-def _remove_punctuation(word):
-    for p in pū.legal_punctuation:
+def _remove_intra_word_punctuation(word):
+    for p in pū.intra_word_punctuation:
         word = word.replace(p, '')
     return word
-
