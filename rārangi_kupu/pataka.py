@@ -16,6 +16,8 @@ class HPK():
         Word_ID = namedtuple('Word_ID', 'root_number trunk branch_number twig twig_number')
         
         #unpickle all the parts and make one large dictionary
+        hpk = {}
+
         cf = config.ConfigFile()
         json_path = (cf.configfile[cf.computername]['json_path'])
 
@@ -28,6 +30,10 @@ class HPK():
 
             #round trip
             word_trees_from_json = {Word_ID(**ast.literal_eval(k)):v for k,v in word_trees_from_json.items()}
+            hpk.update(word_trees_from_json)
+
+        self.hpk = hpk
 
 if __name__ == '__main__':
-    HPK()
+    word_trees = HPK().hpk
+

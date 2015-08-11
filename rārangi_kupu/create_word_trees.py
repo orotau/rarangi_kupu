@@ -258,7 +258,7 @@ def is_reo_kē(raw_branch_or_twig):
     '''
     usage_soup = raw_branch_or_twig.find(class_="usage")
     if usage_soup:
-        if 'reo_kē' in usage_soup.string:
+        if 'reo kē' in usage_soup.string:
             return True
         else:
             return False
