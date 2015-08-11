@@ -49,7 +49,7 @@ def create_word_trees(letter):
         #narrow down to the headword that matches the html document name
         headword = fyle.split('.html')[0] #get rid of the .html file extension
         headword_tags = [x for x in all_headword_tags if x.string==headword]
-        pprint.pprint(headword_tags) #debug
+        #pprint.pprint(headword_tags) #debug
 
         #We are *assuming* that the headword tags are ordered correctly
         #We may have to revisit this later
@@ -374,7 +374,8 @@ def get_nominalisations(raw_branch_or_twig):
 if __name__ == '__main__':
     import sys
     import config
-    import simplejson as json
+    import json
+    import ast
     import pū
     import maoriword as mw
     import create_dict_from_excel as cdfe
@@ -397,40 +398,36 @@ if __name__ == '__main__':
 
     #check we have the keys that match those from cdfe
     if word_trees:
-        '''
-        excel_words_dict_keys = cdfe.SpreadSheet(sys.argv[1]).pulldata().keys()
-        excel_words = [list(x) for x in list(excel_words_dict_keys)]
-        excel_words_tree_style = [[x,1] if y=='' else [x,y] for x,y in excel_words]
-        excel_words_tree_style = tuple((y,x) for x,y in excel_words_tree_style)
-        #print(excel_words_tree_style)
 
-        word_tree_words = [(key.root, key.trunk) if key.twig is False else (None,None) for key in word_trees.keys()]
-        word_tree_words = list(set(word_tree_words))
-        word_tree_words = tuple((x,y) for x,y in word_tree_words)
-        #print(word_tree_words)
+        word_trees_for_json = {(str(k)[len(type(k).__name__) + 1 : -1]).replace('=',':'):v \
+                               for k,v in word_trees.items()}
 
-        #print (set.intersection(set(excel_words_tree_style), set(word_tree_words)))
+        Word_ID = namedtuple('Word_ID', 'root_number trunk branch_number twig twig_number')
+        for tree_part in Word_ID._fields:
+            tree_part_to_replace = tree_part + ":"
+            tree_part_replacement = "'" + tree_part + "'" + ":"
+            word_trees_for_json = {k.replace(tree_part_to_replace, tree_part_replacement): v \
+                                   for k,v in word_trees_for_json.items()} 
 
-        print ("In excel but not in the word tree")
-        print (list(set(excel_words_tree_style) - set(word_tree_words)))
+        word_trees_for_json = {"{"+k+"}":v for k,v in word_trees_for_json.items()}
 
-        print ("In the word tree but not excel - VERY unlikely")
-        print (list(set(word_tree_words) - set(excel_words_tree_style)))
+        #to json the word_tree dictionary
+        cf = config.ConfigFile()
+        json_path = (cf.configfile[cf.computername]['json_path'])
+        json_filename = first_argument + ".json"
+        full_json_path = json_path + json_filename
+        with open(full_json_path, 'w') as f:
+            json.dump(word_trees_for_json, f)
 
-        '''
+        #from json the word_tree dictionary
+        with open(full_json_path,'r') as f:
+            word_trees_from_json = json.load(f)
+
+        #create named tuple to store unique keys
+        word_trees_from_json = {Word_ID(**ast.literal_eval(k)):v for k,v in word_trees_from_json.items()}
+
         count = 0
-        for key in sorted(word_trees.keys(), key = mw._get_dict_sort_key):
-            #if key.branch_number <= 1 and key.twig is False and word_trees[key]["hou"] is True:
-            count = count + 1
-            print (count, tuple(key))
-
-            '''
-            # json the dictionary
-            cf = config.ConfigFile()
-            json_path = (cf.configfile[cf.computername]['json_path'])
-            json_filename = first_argument + ".json"
-            full_json_path = json_path + json_filename
-            with open(full_json_path, 'w') as handle:
-                json.dump(word_trees, handle)
-            '''
-
+        for key in sorted(word_trees_from_json.keys(), key = mw._get_dict_sort_key):
+        #for k, v in word_trees_from_json.items():
+            count = count + 1         
+            print (count, key)

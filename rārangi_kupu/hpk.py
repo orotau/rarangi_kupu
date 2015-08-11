@@ -1,6 +1,6 @@
-"""
+'''
 Stuff specific to HPK
-"""
+'''
 
 end_dash = '-'
 start_dash = '-'

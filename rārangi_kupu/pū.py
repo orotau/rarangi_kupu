@@ -13,6 +13,8 @@ macronised_vowels = ('ā', 'ē', 'ī', 'ō', 'ū',
 consonants = ('h', 'k', 'm', 'n', 'p', 'r', 't', 'w',
               'H', 'K', 'M', 'N', 'P', 'R', 'T', 'W')
 
+#dictionary_letters = ('A', 'E', 'H', 'I', 'K', 'M', 'N', 'Ng', 'O', 'P', 'R', 'T', 'U', 'W', 'Wh')
+dictionary_letters = ('T',)
 all_letters = digraphs + vowels + macronised_vowels + consonants
 
 intra_word_punctuation = [' ', '-']
