@@ -423,7 +423,7 @@ if __name__ == '__main__':
         with open(full_json_path,'r') as f:
             word_trees_from_json = json.load(f)
 
-        #create named tuple to store unique keys
+        #round trip
         word_trees_from_json = {Word_ID(**ast.literal_eval(k)):v for k,v in word_trees_from_json.items()}
 
         count = 0
