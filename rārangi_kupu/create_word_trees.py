@@ -95,7 +95,10 @@ def create_word_trees(letter):
                         else:
                             twig_number = twig_number + 1 
  
-                
+                #hack because 'hamo' and 'hamo pango' are updside down in online version
+                if twig == 'hamo pango':
+                    branch_number = 1
+
                 word_id = Word_ID(root_number, trunk, branch_number, twig, twig_number)
                 print(word_id)
 

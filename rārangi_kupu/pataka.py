@@ -35,7 +35,7 @@ def get_all_entries():
     print (len(all_entries))
     temp = []
     for k,v in all_entries.items():
-        if k.trunk == 'mano':
+        if k.trunk == 'nge':
             temp.append(k)
     pprint.pprint (sorted(temp, key=mw.get_dict_sort_key))
     return sorted(all_entries, key=mw.get_dict_sort_key)
