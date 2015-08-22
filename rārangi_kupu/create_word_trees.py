@@ -6,22 +6,16 @@ import pprint
 
 def create_word_trees(letter):
     '''
-    We are using the concept of a 'word tree' to represent each 'word'
+    We are using the concept of a 'word tree part' to represent each 'word'
 
-    Each 'word tree' will be stored as a Python dictionary
+    Each 'word tree part' will be stored as a Python dictionary
 
-    The unique key consists of 4 parts:
-    1. root - A digit
-    2. trunk - A word form such as 'hua'
-    3. branch - A digit
-    4. twig - True or False
-
-    I found at least one twig with a duplicate form 'kai wētā'
-    So changed the way that 'twig' works
-
-    False if it is a branch
-    1 for twig 1, 2 for twig 2, etc
-
+    The 'word tree part's' unique key consists of 5 pieces:
+    1. root_number - A digit, 1, 2 etc.
+    2. trunk - A 'word form' such as 'hua'
+    3. branch_number - A digit (can be 0, if the twig comes straight out of the trunk)
+    4. twig - False if there is no twig 'word form'. Otherwise the twig 'word form'
+    5. twig_number - 0 if there is no twig, the twig number otherwise
     '''
 
     #word trees
@@ -48,6 +42,9 @@ def create_word_trees(letter):
 
         #narrow down to the headword that matches the html document name
         headword = fyle.split('.html')[0] #get rid of the .html file extension
+
+        trunk = headword #set the trunk
+    
         headword_tags = [x for x in all_headword_tags if x.string==headword]
         #pprint.pprint(headword_tags) #debug
 
@@ -55,37 +52,54 @@ def create_word_trees(letter):
         #We may have to revisit this later
 
         for root_counter, headword_tag in enumerate(headword_tags):
-            #get all the raw branches and twigs (if there are any) for each headword_tag
+
+            root_number = root_counter + 1 #set the root_number
+
+            branch_number_set = False #used to identify when twigs go straight on a trunk
+
+            #get all the raw branches and twigs on the tree
+            #it is possible that there can be no branches or there can be no twigs
             all_raw_branches_and_twigs = get_raw_branches_and_twigs(soup, headword_tag)
 
-            root_number = root_counter + 1
             for counter, raw_branch_or_twig in enumerate(all_raw_branches_and_twigs):
+                #identify each branch and twig by setting
+                #branch_number, twig, twig_number for each branch and twig on the tree
 
-                #trunk, branch, twig and twig_number
-                trunk = headword
                 branch_number = get_branch_number(raw_branch_or_twig)
 
                 if not branch_number is None:
                     #we have a branch
-                    twig = False
-                    twig_number = 0
+                    branch_number_set = True
                     branch_number_for_twig = branch_number
+                    twig = False #twig always False for a branch
+                    twig_number = 0 #twig_number always 0 for a branch (*)
                 else:
                     #we have a twig
                     twig = raw_branch_or_twig.find(class_="subentry").string
 
-                    if counter == 0:
-                        #no branch at all
+                    #set the branch number for the twig
+                    if not branch_number_set:
+                        #twig directly on trunk
                         branch_number = 0
-                        twig_number = 0
                     else:
-                        branch_number =  branch_number_for_twig
+                        branch_number = branch_number_for_twig
 
-                    twig_number = twig_number + 1
+                    #set the twig number for the twig
+                    if branch_number_set:
+                        twig_number = twig_number + 1 #using (*) above
+                    else:
+                        #twig directly on trunk
+                        if counter == 0:
+                            #first time through loop
+                            twig_number = 1
+                        else:
+                            twig_number = twig_number + 1 
  
+                
                 word_id = Word_ID(root_number, trunk, branch_number, twig, twig_number)
+                print(word_id)
 
-                leaves = {} #9 keys
+                leaves = {} #  9 keys in all
                 atua = get_atua(raw_branch_or_twig) #1
                 leaves["atua"] = atua
 
@@ -396,7 +410,6 @@ if __name__ == '__main__':
         print ("The first argument must be a Māori letter")
         sys.exit()
 
-    #check we have the keys that match those from cdfe
     if word_trees:
 
         word_trees_for_json = {(str(k)[len(type(k).__name__) + 1 : -1]).replace('=',':'):v \
@@ -427,7 +440,7 @@ if __name__ == '__main__':
         word_trees_from_json = {Word_ID(**ast.literal_eval(k)):v for k,v in word_trees_from_json.items()}
 
         count = 0
-        for key in sorted(word_trees_from_json.keys(), key = mw._get_dict_sort_key):
+        for key in sorted(word_trees_from_json.keys(), key = mw.get_dict_sort_key):
         #for k, v in word_trees_from_json.items():
             count = count + 1         
             print (count, key)

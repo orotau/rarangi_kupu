@@ -61,7 +61,7 @@ class MaoriWord():
         return self.word
 
 
-def _get_list_sort_key(words_input):
+def get_list_sort_key(words_input):
 
     #Split the words input into a list
     words_input = _words_split(words_input)
@@ -79,7 +79,7 @@ def _get_list_sort_key(words_input):
     #Key 1 - Letters
     key1 = _demacronise(word)
     key1 = key1.lower()
-    key1 = _aslist(key1)        
+    key1 = _aslist(key1)
 
     #Key 2 - Macrons
     key2 = word.lower()
@@ -91,7 +91,7 @@ def _get_list_sort_key(words_input):
     return key1, key2, key3
 
 
-def _get_dict_sort_key(named_tuple_input):
+def get_dict_sort_key(named_tuple_input):
 
     '''
     This method takes as input a named tuple in the form
@@ -148,7 +148,7 @@ def _get_dict_sort_key(named_tuple_input):
     root_number = named_tuple_input.root_number
     branch_number = named_tuple_input.branch_number
     twig_number = named_tuple_input.twig_number
-    list_sort_key = _get_list_sort_key(word_form)
+    list_sort_key = get_list_sort_key(word_form)
     return list_sort_key, root_number, branch_number, twig_number
     
 
