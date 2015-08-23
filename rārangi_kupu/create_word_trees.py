@@ -395,10 +395,10 @@ if __name__ == '__main__':
     import ast
     import pū
     import maoriword as mw
-    import create_dict_from_excel as cdfe
     
     try:
-        first_argument = sys.argv[1]
+        #first_argument = sys.argv[1] #uncomment to run
+        first_argument = "are u sure - if so u need to edit the function" #remove to run
     except IndexError:
         #No argument given
         print ("Please supply a Māori letter as the argument")
@@ -439,11 +439,3 @@ if __name__ == '__main__':
         with open(full_json_path,'r') as f:
             word_trees_from_json = json.load(f)
 
-        #round trip
-        word_trees_from_json = {Word_ID(**ast.literal_eval(k)):v for k,v in word_trees_from_json.items()}
-
-        count = 0
-        for key in sorted(word_trees_from_json.keys(), key = mw.get_dict_sort_key):
-        #for k, v in word_trees_from_json.items():
-            count = count + 1         
-            print (count, key)

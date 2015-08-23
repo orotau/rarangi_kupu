@@ -7,7 +7,6 @@ import config
 import json
 import ast
 from collections import namedtuple, Counter
-from unicodedata import normalize
 import pprint
 import pū
 import maoriword as mw
@@ -32,12 +31,6 @@ def get_all_entries():
 
         word_trees_from_json = {Word_ID(**ast.literal_eval(k)):v for k,v in word_trees_from_json.items()}
         all_entries.update(word_trees_from_json)
-    print (len(all_entries))
-    temp = []
-    for k,v in all_entries.items():
-        if k.trunk == 'nge':
-            temp.append(k)
-    pprint.pprint (sorted(temp, key=mw.get_dict_sort_key))
     return sorted(all_entries, key=mw.get_dict_sort_key)
 
 
@@ -53,24 +46,6 @@ def get_headwords():
         get_all_entries()
     headwords = []
     headwords = list(set([(k.root_number, k.trunk) for k in all_entries.keys()]))
-
-    #count the headwords for each dictionary letter (for cross checking)
-    dictionary_letters = []
-    for hw in [x[1] for x in headwords]:
-        if hw.startswith('-'):
-            #if a headword starts with a dash, it is ignored
-            hw = hw[1:]
-
-        if any(hw.startswith(x) for x in pū.digraphs):
-            #the headword starts with a digraph
-            dictionary_letters.append(hw[0:1].upper() + hw[1:2]) #Ng or Wh
-        else:
-            #the headword doesn't start with a digraph
-            #remove any macron and make uppercase
-            dictionary_letters.append(normalize('NFD', hw[0:1].upper())[0])
-
-    c = Counter(dictionary_letters)
-    pprint.pprint(sorted(c.most_common()))
     return headwords
 
 
@@ -178,24 +153,56 @@ def get_children(input_string = 'pungakupa',
                 children.append(word)
     return(children)
 
+def bar(z, y='supersplodge'):
+    print ('y', y)
+    print ('z', z)
+    pass
+
     
 if __name__ == '__main__':
+
     import sys
-    import pprint
-    import inspect
-    import ast
+    import argparse
 
+    # create the top-level parser
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+
+    # create the parser for the get_all_entries function
+    get_all_entries_parser = subparsers.add_parser('get_all_entries')
+    get_all_entries_parser.set_defaults(function = get_all_entries)
+
+    # create the parser for the "bar" command
+    parser_bar = subparsers.add_parser('bar')
+    parser_bar.add_argument('-z')
+    parser_bar.add_argument('-y')
+    parser_bar.set_defaults(function = bar)
+
+    # parse the arguments
+    arguments = parser.parse_args()
+    arguments = vars(arguments) #convert from Namespace to dict
+
+    #attempt to extract and then remove the function entry
     try:
-        first_argument = sys.argv[1]
-    except IndexError:
-        #No argument given
-        print ("Please supply a function name")
+        function_to_call = arguments['function'] 
+    except KeyError:
+        #python pataka.py entered on command line (a function name is required)
+        print ("You need a function name. Please type -h to get help")
         sys.exit()
+    else:
+        #remove the function entry
+        del arguments['function']
+    
+    if arguments:
+        #remove any entries that have a value of 'None'
+        #We are *assuming* that these are optional
+        #We are doing this because we want the function definition to define
+        #the defaults (NOT the function call)
+        arguments = { k : v for k,v in arguments.items() if v is not None }
+    
+    result = function_to_call(**arguments) #note **arguments works fine for empty dict {}
+   
+    #print (len(result))
 
-    function_to_call = getattr(sys.modules[__name__], first_argument)
-    result = function_to_call()
-
-    pprint.pprint(result)
-    print (len(result))
 
 
