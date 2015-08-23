@@ -1,24 +1,23 @@
 '''
-The module to access the json files
-I'm not really sure what it does as yet
+The module to access and process the 
+dictionary which is stored as json files
 '''
 
 import config
 import json
 import ast
-from collections import namedtuple, Counter
+from collections import namedtuple, Counter, OrderedDict
 import pprint
 import pū
 import maoriword as mw
 
-all_entries = {}
 
 def get_all_entries():
 
+    all_entries = {}
     Word_ID = namedtuple('Word_ID', 'root_number trunk branch_number twig twig_number')
     
-    #gather all the parts and make one large dictionary
-
+    #gather all the parts and make one large ordered dictionary
     cf = config.ConfigFile()
     json_path = (cf.configfile[cf.computername]['json_path'])
 
@@ -31,7 +30,7 @@ def get_all_entries():
 
         word_trees_from_json = {Word_ID(**ast.literal_eval(k)):v for k,v in word_trees_from_json.items()}
         all_entries.update(word_trees_from_json)
-    return sorted(all_entries, key=mw.get_dict_sort_key)
+    return OrderedDict(sorted(all_entries.items(), key=mw.get_dict_sort_key))
 
 
 def get_headwords():
@@ -41,33 +40,62 @@ def get_headwords():
 
     A headword is a unique 'root number, trunk' combination
     '''
-
-    if not all_entries:
-        get_all_entries()
+    all_entries = get_all_entries()
     headwords = []
     headwords = list(set([(k.root_number, k.trunk) for k in all_entries.keys()]))
     return headwords
 
 
-def get_passives():
+def get_passives(words_only = True):
     '''
-    The purpose of this method is to get all of the passives 
-    suffixes for all the words (at this point)
+    The purpose of this method is to get all entries that
+    have passive suffixes.
     '''
 
-    if not all_entries:
-        get_all_entries()
-    passives = []
-    for k,v in all_entries.items():
-        if v["pīmuri_whakahāngū"]:
-            passives.append(k)
-    return sorted(passives, key=mw.get_dict_sort_key)
+    print (bool(words_only))
+    all_entries = get_all_entries()
+    passives = {k:v for k,v in all_entries.items() if v["pīmuri_whakahāngū"]}
+    
+    if words_only:
+        passive_words = []
+        for k,v in passives.items():
+            for suffix in [x for x in v["pīmuri_whakahāngū"] if x]:
+                #the code to process suffixes left 11 cases of passive suffixes = ''
+                #so list comprehension  is used to weed these out (above)
+                if suffix.startswith(chr(8209)): #looks like a '-'
+                    #append to either the trunk or the twig
+                    if k.twig is False:
+                        #branch
+                        passive_word = k.trunk + suffix[1:]
+                    else:
+                        #twig
+                        passive_word = k.twig + suffix[1:]
+                else:
+                    passive_word = suffix #completely new word as passive
+                #print(passive_word)
+                passive_words.append(passive_word)
         
+        passive_words = list(set(passive_words)) #unique only
+        #return sorted(passive_words)
+        return sorted(passive_words, key=mw.get_list_sort_key)
+                    
+    else:
+        return OrderedDict(sorted(passives.items(), key=mw.get_dict_sort_key))
+
+
+def get_nominalisations():
+    '''
+    The purpose of this method is to get all entries that
+    have nominalisation suffixes.
+    '''
+    all_entries = get_all_entries()
+    nominsalisations = {k:v for k,v in all_entries.items() if v["pīmuri_whakaingoa"]}
+    return OrderedDict(sorted(nominsalisations.items(), key=mw.get_dict_sort_key))
+
 
 def get_twigs(on_trunk_only = False):
 
-    if not all_entries:
-        get_all_entries() 
+    all_entries = get_all_entries() 
     twigs = []    
     for k,v in all_entries.items():
         if not k.twig is False:
@@ -87,8 +115,7 @@ def get_word_forms():
     will be *excluded*
     passives and nominalisations to be dealt with later
     '''
-    if not all_entries:
-        get_all_entries()
+    all_entries = get_all_entries()
     word_forms = []
 
     for k,v in all_entries.items():
@@ -116,9 +143,8 @@ def get_word_forms():
     
 
 
-def get_children(input_string = 'pungakupa', 
+def get_children(input_string = 'pangakupu', 
                  minimum_length = 3, 
-                 split_digraphs = False,
                  must_include_last_letter = True):
     '''
     Returns a list containing all the word forms (children)
@@ -127,18 +153,12 @@ def get_children(input_string = 'pungakupa',
 
     children = []
 
-    if not split_digraphs: #default
-        input_string_to_use = mw._aslist(input_string)
-    else:
-        input_string_to_use = input_string
+    input_string_to_use = mw._aslist(input_string)
 
     unique_word_forms = get_word_forms()
     for word in [x for x in unique_word_forms if len(x) >= minimum_length]:
 
-        if not split_digraphs: #default                       
-            word_to_use = mw._aslist(word)
-        else:
-            word_to_use = word
+        word_to_use = mw._aslist(word)
 
         is_child = False            
         if not (Counter(word_to_use) - Counter(input_string_to_use)):
@@ -153,30 +173,37 @@ def get_children(input_string = 'pungakupa',
                 children.append(word)
     return(children)
 
-def bar(z, y='supersplodge'):
-    print ('y', y)
-    print ('z', z)
-    pass
-
     
 if __name__ == '__main__':
 
     import sys
     import argparse
+    import pprint
 
     # create the top-level parser
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
     # create the parser for the get_all_entries function
-    get_all_entries_parser = subparsers.add_parser('get_all_entries')
+    get_all_entries_parser = subparsers.add_parser('get_all_entries', help = '>>>>>> No arguments')
     get_all_entries_parser.set_defaults(function = get_all_entries)
 
-    # create the parser for the "bar" command
-    parser_bar = subparsers.add_parser('bar')
-    parser_bar.add_argument('-z')
-    parser_bar.add_argument('-y')
-    parser_bar.set_defaults(function = bar)
+    # create the parser for the get_headwords function
+    get_headwords_parser = subparsers.add_parser('get_headwords', help = '>>>>>> No arguments')
+    get_headwords_parser.set_defaults(function = get_headwords)
+
+    # create the parser for the get_passives function
+    get_passives_parser = subparsers.add_parser('get_passives', help = '>>>>>> No arguments')
+    get_passives_parser.add_argument('-words_only')
+    get_passives_parser.set_defaults(function = get_passives)
+
+    # create the parser for the get_nominalisations function
+    get_nominalisations_parser = subparsers.add_parser('get_nominalisations', help = '>>>>>> No arguments')
+    get_nominalisations_parser.set_defaults(function = get_nominalisations)
+
+    # create the parser for the get_children function
+    get_children_parser = subparsers.add_parser('get_children', help = '>>>>>> No arguments')
+    get_children_parser.set_defaults(function = get_children)
 
     # parse the arguments
     arguments = parser.parse_args()
@@ -202,7 +229,10 @@ if __name__ == '__main__':
     
     result = function_to_call(**arguments) #note **arguments works fine for empty dict {}
    
-    #print (len(result))
-
+    print (len(result))
+    print (type(result))
+    pprint.pprint(result)
+    #for k,v in result.items():
+        #print(k, v["pīmuri_whakaingoa"])
 
 

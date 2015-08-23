@@ -91,11 +91,18 @@ def get_list_sort_key(words_input):
     return key1, key2, key3
 
 
-def get_dict_sort_key(named_tuple_input):
+def get_dict_sort_key(dict_key_value_tuple):
 
     '''
-    This method takes as input a named tuple in the form
+    This method takes as input a dict_key_value_tuple in the form
+    (key, value)
+    
+    The *key* is a named tuple
     Word_ID(root_number, trunk, branch_number, twig, twig_number)
+
+    The *value* is a dictionary of all the leaves 
+    It is just along for the ride        
+
     and returns a key suitable for sorting dictionary
     entries as they are in HPK
 
@@ -103,6 +110,7 @@ def get_dict_sort_key(named_tuple_input):
     list sort key, root number, branch number, twig_number
 
     '''
+    named_tuple_input = dict_key_value_tuple[0]
     word_form = named_tuple_input.trunk
 
     #if we have a suffix remove the - at the end of it
