@@ -398,7 +398,7 @@ if __name__ == '__main__':
     
     try:
         #first_argument = sys.argv[1] #uncomment to run
-        first_argument = "are u sure - if so u need to edit the function" #remove to run
+        first_argument = "are u sure - if so u need to edit the function" #comment to run
     except IndexError:
         #No argument given
         print ("Please supply a Māori letter as the argument")

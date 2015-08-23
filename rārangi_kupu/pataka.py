@@ -48,11 +48,13 @@ def get_headwords():
 
 def get_passives(words_only = True):
     '''
-    The purpose of this method is to get all entries that
-    have passive suffixes.
+    if words_only = True (default)    
+    The purpose of this method is to get all the distinct passive words.
+    
+    if words_only = False 
+    Will return an OrderedDict of only those twigs and branches
+    that have passive endings.
     '''
-
-    print (bool(words_only))
     all_entries = get_all_entries()
     passives = {k:v for k,v in all_entries.items() if v["pīmuri_whakahāngū"]}
     
@@ -60,8 +62,8 @@ def get_passives(words_only = True):
         passive_words = []
         for k,v in passives.items():
             for suffix in [x for x in v["pīmuri_whakahāngū"] if x]:
-                #the code to process suffixes left 11 cases of passive suffixes = ''
-                #so list comprehension  is used to weed these out (above)
+                #the code to process suffixes resulted in 11 cases of passive suffixes = ''
+                #so list comprehension (above) is used to weed these out.
                 if suffix.startswith(chr(8209)): #looks like a '-'
                     #append to either the trunk or the twig
                     if k.twig is False:
@@ -72,25 +74,50 @@ def get_passives(words_only = True):
                         passive_word = k.twig + suffix[1:]
                 else:
                     passive_word = suffix #completely new word as passive
-                #print(passive_word)
                 passive_words.append(passive_word)
         
         passive_words = list(set(passive_words)) #unique only
-        #return sorted(passive_words)
         return sorted(passive_words, key=mw.get_list_sort_key)
                     
     else:
         return OrderedDict(sorted(passives.items(), key=mw.get_dict_sort_key))
 
 
-def get_nominalisations():
+def get_nominalisations(words_only = True):
     '''
-    The purpose of this method is to get all entries that
-    have nominalisation suffixes.
+    if words_only = True (default)    
+    The purpose of this method is to get all the distinct nominalised words.
+    
+    if words_only = False 
+    Will return an OrderedDict of only those twigs and branches
+    that have nominalised endings.
     '''
     all_entries = get_all_entries()
-    nominsalisations = {k:v for k,v in all_entries.items() if v["pīmuri_whakaingoa"]}
-    return OrderedDict(sorted(nominsalisations.items(), key=mw.get_dict_sort_key))
+    nominalisations = {k:v for k,v in all_entries.items() if v["pīmuri_whakaingoa"]}
+    
+    if words_only:
+        nominalised_words = []
+        for k,v in nominalisations.items():
+            for suffix in [x for x in v["pīmuri_whakaingoa"] if x]:
+                if not suffix:
+                    print(k)
+                if suffix.startswith(chr(8209)): #looks like a '-'
+                    #append to either the trunk or the twig
+                    if k.twig is False:
+                        #branch
+                        nominalised_word = k.trunk + suffix[1:]
+                    else:
+                        #twig
+                        nominalised_word = k.twig + suffix[1:]
+                else:
+                    nominalised_word = suffix #completely new word as nominalised form
+                nominalised_words.append(nominalised_word)
+        
+        nominalised_words = list(set(nominalised_words)) #unique only
+        return sorted(nominalised_words, key=mw.get_list_sort_key)
+                    
+    else:
+        return OrderedDict(sorted(nominalisations.items(), key=mw.get_dict_sort_key))
 
 
 def get_twigs(on_trunk_only = False):
@@ -179,6 +206,7 @@ if __name__ == '__main__':
     import sys
     import argparse
     import pprint
+    import ast
 
     # create the top-level parser
     parser = argparse.ArgumentParser()
@@ -193,12 +221,13 @@ if __name__ == '__main__':
     get_headwords_parser.set_defaults(function = get_headwords)
 
     # create the parser for the get_passives function
-    get_passives_parser = subparsers.add_parser('get_passives', help = '>>>>>> No arguments')
+    get_passives_parser = subparsers.add_parser('get_passives')
     get_passives_parser.add_argument('-words_only')
     get_passives_parser.set_defaults(function = get_passives)
 
     # create the parser for the get_nominalisations function
-    get_nominalisations_parser = subparsers.add_parser('get_nominalisations', help = '>>>>>> No arguments')
+    get_nominalisations_parser = subparsers.add_parser('get_nominalisations')
+    get_nominalisations_parser.add_argument('-words_only')
     get_nominalisations_parser.set_defaults(function = get_nominalisations)
 
     # create the parser for the get_children function
@@ -226,12 +255,15 @@ if __name__ == '__main__':
         #We are doing this because we want the function definition to define
         #the defaults (NOT the function call)
         arguments = { k : v for k,v in arguments.items() if v is not None }
-    
+
+        #alter any string 'True' or 'False' to bools
+        arguments = { k : ast.literal_eval(v) for k,v in arguments.items() if v in ['True','False'] }       
+
     result = function_to_call(**arguments) #note **arguments works fine for empty dict {}
    
     print (len(result))
     print (type(result))
-    pprint.pprint(result)
+    #pprint.pprint(result)
     #for k,v in result.items():
         #print(k, v["pīmuri_whakaingoa"])
 
