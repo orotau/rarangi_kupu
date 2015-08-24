@@ -120,15 +120,33 @@ def get_nominalisations(words_only = True):
         return OrderedDict(sorted(nominalisations.items(), key=mw.get_dict_sort_key))
 
 
-def get_twigs(on_trunk_only = False):
+def get_twigs(words_only = True, on_trunk_only = False):
+    '''
+    The purpose of this function is to return all the twigs
+    A twig is defined as an entry in the all_entries dictionary
+    where there is a word in the 'twig' part of the namedtuple key.
 
+    If there is a requirement to look at twigs that are directly
+    on the trunk then set on_trunk_only = True
+
+    words_only will return a list
+    otherwise an OrderedDict of the twigs 
+    '''
     all_entries = get_all_entries() 
-    twigs = []    
-    for k,v in all_entries.items():
-        if not k.twig is False:
-            if k.branch_number == 0:
-                twigs.append(k)
-    return sorted(twigs, key=mw.get_dict_sort_key)
+
+    #all twigs
+    twigs = {k:v for k,v in all_entries.items() if not k.twig is False}
+
+    if on_trunk_only:   
+        #subset of the twigs     
+        twigs = {k:v for k,v in all_entries.items() if k.branch_number == 0}
+
+    if words_only:
+        twigs_list = [k.twig for k in twigs.keys()]
+        twigs_list = list(set(twigs_list)) #unique only
+        return sorted(twigs_list, key=mw.get_list_sort_key)
+    else:
+        return OrderedDict(sorted(twigs.items(), key=mw.get_dict_sort_key))
 
 
 def get_word_forms():
@@ -230,6 +248,12 @@ if __name__ == '__main__':
     get_nominalisations_parser.add_argument('-words_only')
     get_nominalisations_parser.set_defaults(function = get_nominalisations)
 
+    # create the parser for the get_twigs function
+    get_twigs_parser = subparsers.add_parser('get_twigs')
+    get_twigs_parser.add_argument('-words_only')
+    get_twigs_parser.add_argument('-on_trunk_only')
+    get_twigs_parser.set_defaults(function = get_twigs)
+
     # create the parser for the get_children function
     get_children_parser = subparsers.add_parser('get_children', help = '>>>>>> No arguments')
     get_children_parser.set_defaults(function = get_children)
@@ -264,7 +288,7 @@ if __name__ == '__main__':
     print (len(result))
     print (type(result))
     #pprint.pprint(result)
-    #for k,v in result.items():
-        #print(k, v["pīmuri_whakaingoa"])
+    for k,v in result.items():
+        print(k)
 
 

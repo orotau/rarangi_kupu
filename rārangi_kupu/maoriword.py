@@ -63,6 +63,16 @@ class MaoriWord():
 
 def get_list_sort_key(words_input):
 
+    '''
+    The parameter is called words_input to allow for the fact that
+    we can sort items that are of the form
+    e.g. He, aha
+    That is containing a comma and space together, which separates two or more words
+    '''
+
+    #Weed out the stray ')' and such like
+    words_input = hpk.clean_hpk_word_for_sorting(words_input)
+
     #Split the words input into a list
     words_input = _words_split(words_input)
 
@@ -111,52 +121,12 @@ def get_dict_sort_key(dict_key_value_tuple):
 
     '''
     named_tuple_input = dict_key_value_tuple[0]
-    word_form = named_tuple_input.trunk
 
-    #if we have a suffix remove the - at the end of it
-    if word_form.endswith(hpk.end_dash):
-        word_form = word_form[:-1]
-
-    #if we have a prefix remove the - at the start of it
-    if word_form.startswith(hpk.start_dash):
-        word_form = word_form[1:]
-  
-    #if we have a kīanga remove the ellipsis at the end of it
-    if word_form.endswith(hpk.ellipsis):
-        word_form = word_form[:-6]
-
-    #if we have kawititanga o te ringa(ringa) remove the (ringa)
-    if word_form == hpk.kotrr:
-        word_form = word_form[:-7]
-
-    #if we have E koe (E koe e koe) remove the  (E koe e koe)
-    if word_form == hpk.ekekek:
-        word_form = word_form[:-14] #including the space before the bracket 
-
-    #if we have 'tahi (i te) tahua' remove the brackets
-    if word_form == hpk.titt:
-        word_form = word_form.replace('(','').replace(')','')
-
-    #if we have 'takahi (i te) whare' remove the brackets
-    if word_form == hpk.titw:
-        word_form = word_form.replace('(','').replace(')','')
-
-    #if we have 'hohou (i te) rongo' remove the brackets
-    if word_form == hpk.hitr:
-        word_form = word_form.replace('(','').replace(')','')
-
-    #if we have 'mataono (rite)' remove the brackets
-    if word_form == hpk.mr:
-        word_form = word_form.replace('(','').replace(')','')
-
-    #if we have 'E nge.' remove the . at the end of it
-    if word_form == hpk.en_dot:
-        word_form = word_form[:-1]    
-
+    list_sort_key = get_list_sort_key(named_tuple_input.trunk)  
     root_number = named_tuple_input.root_number
     branch_number = named_tuple_input.branch_number
     twig_number = named_tuple_input.twig_number
-    list_sort_key = get_list_sort_key(word_form)
+
     return list_sort_key, root_number, branch_number, twig_number
     
 

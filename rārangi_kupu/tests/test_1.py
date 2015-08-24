@@ -76,7 +76,7 @@ def test_demacronise():
     assert mw._demacronise('āēīōūĀĒĪŌŪ') == 'aeiouAEIOU'
 
 
-def testget_list_sort_key():
+def test_get_list_sort_key():
     assert mw.get_list_sort_key('rā') == (['r', 'a'], ['r', 'ā'], ['r', 'ā'])
     assert mw.get_list_sort_key('NGĀ') == (['ng', 'a'], ['ng', 'ā'], ['NG', 'Ā'])
 
