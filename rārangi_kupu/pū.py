@@ -16,6 +16,7 @@ consonants = ('h', 'k', 'm', 'n', 'p', 'r', 't', 'w',
 dictionary_letters = ('A', 'E', 'H', 'I', 'K', 'M', 'N', 'Ng', 'O', 'P', 'R', 'T', 'U', 'W', 'Wh')
 
 all_single_letters = vowels + macronised_vowels + consonants
+all_vowels = vowels + macronised_vowels
 all_letters = digraphs + vowels + macronised_vowels + consonants
 
 duals_left = ['w', 'n']

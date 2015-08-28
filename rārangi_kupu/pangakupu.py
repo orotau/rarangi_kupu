@@ -863,26 +863,6 @@ def get_all_koru(seed_word):
         print (koru_children)
         print (len(koru_children))
 
-def get_nines_structure():
-    nines_as_list = [mw._aslist(x) for x in nines]
-    nines_structure = []
-    for nine_as_list in nines_as_list:
-        nine_as_list = ['V' if x in pū.vowels + pū.macronised_vowels else x for x in nine_as_list]
-        nine_as_list = ['D' if len(x) == 2 else x for x in nine_as_list]
-        nine_as_list = ['C' if x in pū.consonants else x for x in nine_as_list]
-        nines_structure.append(nine_as_list)
-    
-    counts = []
-    for nine_structure in nines_structure:
-        ns_count = Counter(nine_structure)
-        ns_count = dict(ns_count)
-        ns_count = list(ns_count.items())
-        counts.append(tuple(ns_count))
-    
-    d =  Counter(counts)
-    pprint.pprint(d)
-
-
 def get_seed_word_structure(seed_word=None):
 
     if seed_word is None:
@@ -894,8 +874,26 @@ def get_seed_word_structure(seed_word=None):
     seed_word_structure = ['D' if len(x) == 2 else x for x in seed_word_structure]
     seed_word_structure = ['C' if x in pū.consonants else x for x in seed_word_structure]
    
-    print (seed_word, dict(Counter(seed_word_structure)))
+    #print (seed_word, dict(Counter(seed_word_structure)))
     return dict(Counter(seed_word_structure))
+
+
+def get_nines_subset():
+
+    consts = []
+    for nine in nines:
+        nine_structure = get_seed_word_structure(nine)
+        if nine_structure['V'] == 4 and nine_structure['D'] == 1 and nine_structure['C'] == 3:
+            nine_consts = [x for x in mw._aslist(nine) if x in pū.consonants]
+            if 'w' in nine_consts:
+                print (nine, nine_consts)
+            consts.append(nine_consts)
+    
+    #c = Counter(tuple(consts))
+    #print(c)
+    #pprint.pprint(consts)
+    return
+                  
 
 
 def get_koru(seed_word=None):
@@ -903,14 +901,13 @@ def get_koru(seed_word=None):
     if seed_word is None:
         seed_word = random.choice(nines)
 
-    seed_word_structure = get_seed_word_structure(seed_word) #why?
-
     koru = [None] * 9 #initialise koru
 
     #listify the seed word and split into single letters and digraphs
     seed_word_as_list = mw._aslist(seed_word)
     single_letters = [x for x in seed_word_as_list if x in pū.all_single_letters] #will be emptied
     digraphs = [x for x in seed_word_as_list if x in pū.digraphs] #will be emptied
+    digraphs_count = len(digraphs)
 
     #randomly select 'centre letter' and remove it from single letters
     centre_letter = random.choice(single_letters)
@@ -932,9 +929,7 @@ def get_koru(seed_word=None):
             ok_digraph_squares = [(0,1),(6,5)]
         else:
             #'vertical digraphs' not an issue
-            ok_digraph_squares = [(0,1),(1,2),(5,4),(6,5)]
-
-        digraphs_count = len(digraphs)
+            ok_digraph_squares = [(0,1),(1,2),(5,4),(6,5)]        
 
         if digraphs_count == 1 or digraphs_count == 2:
             #randomly select 'digraph1' and remove it from digraphs
@@ -942,35 +937,36 @@ def get_koru(seed_word=None):
             digraphs.remove(digraph1)
 
             #randomly select the squares for 'digraph1'
-            digraph1_square = random.choice(ok_digraph_squares)
+            digraph1_squares = random.choice(ok_digraph_squares)
 
             #add 'digraph1' to koru
-            koru[digraph1_square[0]] = digraph1[0] #7 squares remaining
-            koru[digraph1_square[1]] = digraph1[1] #6 squares remaining
+            koru[digraph1_squares[0]] = digraph1[0] #7 squares remaining
+            koru[digraph1_squares[1]] = digraph1[1] #6 squares remaining
 
             if digraphs_count == 2:
                 #select 'digraph2' and remove it from digraphs
-                digraph2 = random.choice(digraphs)
+                digraph2 = random.choice(digraphs) #should only be 1 left
                 digraphs.remove(digraph2)
 
                 #place the 2nd digraph directly above or below the first
-                if digraph1_square == (0,1) : digraph2_square = (6,5)
-                if digraph1_square == (6,5) : digraph2_square = (0,1)
-                if digraph1_square == (1,2) : digraph2_square = (5,4)
-                if digraph1_square == (5,4) : digraph2_square = (1,2)
+                if digraph1_squares == (0,1) : digraph2_squares = (6,5)
+                if digraph1_squares == (6,5) : digraph2_squares = (0,1)
+                if digraph1_squares == (1,2) : digraph2_squares = (5,4)
+                if digraph1_squares == (5,4) : digraph2_squares = (1,2)
 
                 #add 'digraph2 to koru'
-                koru[digraph2_square[0]] = digraph2[0] #5 squares remaining
-                koru[digraph2_square[1]] = digraph2[1] #4 squares remaining
+                koru[digraph2_squares[0]] = digraph2[0] #5 squares remaining
+                koru[digraph2_squares[1]] = digraph2[1] #4 squares remaining
+    #End of Placing Digraphs
 
 
-    #place the rest of the single letters
+    #place the rest of the single letters (aside from that in the centre)
     if digraphs_count == 2:
             #4 squares remaining
             #we may have 1 consonant to place in a specific position
             remaining_consonant = [x for x in single_letters if x in pū.consonants]
             if remaining_consonant:
-                if digraph1_square == (0,1) or digraph1_square == (6,5):
+                if digraph1_squares == (0,1) or digraph1_squares == (6,5):
                     koru[3] = remaining_consonant[0]
                 else:
                     koru[7] = remaining_consonant[0]
@@ -983,24 +979,153 @@ def get_koru(seed_word=None):
                     letter_to_place = random.choice(single_letters)
                     single_letters.remove(letter_to_place)
                     koru[index] = letter_to_place
+    #DONE for 2 digraphs
 
-            #DONE for 2 digraphs
-
-    if digraphs_count == 1 and centre_letter in pū.consonants:
+    if digraphs_count == 1:
         #6 letters remaining to place, of which at least 4 will be vowels
 
-    print(koru)
-                    
+        #get *empty square on digraph row*
+        if digraph1_squares == (0,1) : empty_square_on_digraph_row = 2
+        if digraph1_squares == (1,2) : empty_square_on_digraph_row = 0
+        if digraph1_squares == (6,5) : empty_square_on_digraph_row = 4
+        if digraph1_squares == (5,4) : empty_square_on_digraph_row = 6
+
+        #the *empty square on the digraph row* must have a vowel in it
+        letter_to_place = random.choice([x for x in single_letters if x in pū.all_vowels])
+        single_letters.remove(letter_to_place)
+        koru[empty_square_on_digraph_row] = letter_to_place #5 squares remaining
+
+        #get *empty square underneath or above the digraph*
+        if digraph1_squares == (0,1) : empty_square_underneath_or_above_the_digraph = 7
+        if digraph1_squares == (1,2) : empty_square_underneath_or_above_the_digraph = 3
+        if digraph1_squares == (6,5) : empty_square_underneath_or_above_the_digraph = 7
+        if digraph1_squares == (5,4) : empty_square_underneath_or_above_the_digraph = 3
+
+        #the *empty square underneath or above the digraph* must have a vowel in it
+        letter_to_place = random.choice([x for x in single_letters if x in pū.all_vowels])
+        single_letters.remove(letter_to_place)
+        koru[empty_square_underneath_or_above_the_digraph] = letter_to_place #4 squares remaining
+
+        #get the *empty square in the middle column*
+        if digraph1_squares == (0,1) : empty_square_middle_column = 5
+        if digraph1_squares == (1,2) : empty_square_middle_column = 5
+        if digraph1_squares == (6,5) : empty_square_middle_column = 1
+        if digraph1_squares == (5,4) : empty_square_middle_column = 1
+
+        #the *empty square in the middle column* must have a vowel in it
+        letter_to_place = random.choice([x for x in single_letters if x in pū.all_vowels])
+        single_letters.remove(letter_to_place)
+        koru[empty_square_middle_column] = letter_to_place #3 squares remaining
+
+
+    if digraphs_count == 1 and centre_letter in pū.consonants:
+        #3 squares remaining
+
+        #get the *empty square in the middle row*
+        if digraph1_squares == (0,1) : empty_square_middle_row = 3
+        if digraph1_squares == (1,2) : empty_square_middle_row = 7
+        if digraph1_squares == (6,5) : empty_square_middle_row = 3
+        if digraph1_squares == (5,4) : empty_square_middle_row = 7
+
+        #the *empty square in the middle row* must have a vowel in it
+        letter_to_place = random.choice([x for x in single_letters if x in pū.all_vowels])
+        single_letters.remove(letter_to_place)
+        koru[empty_square_middle_row] = letter_to_place #2 squares remaining
+
+        #fill the remaining 2 squares with whatever letters remain
+        for index, square in enumerate(koru):
+            if square is None:
+                letter_to_place = random.choice(single_letters)
+                single_letters.remove(letter_to_place)
+                koru[index] = letter_to_place
+
+
+    if digraphs_count == 1 and centre_letter in pū.all_vowels:
+        #3 squares remaining (1 isolated and 2 vertically together)
+        #3C or 2C, 1V or 1C, 2V
+
+        #mostly these will be 3 consonants and we just want to ensure that we
+        #don't create any 'vertical digraphs'
+        #and we want to keep vowels and consonants separate
+
+        #get the *isolated empty square*
+        if digraph1_squares == (0,1) : isolated_empty_square = 6
+        if digraph1_squares == (1,2) : isolated_empty_square = 4
+        if digraph1_squares == (6,5) : isolated_empty_square = 0
+        if digraph1_squares == (5,4) : isolated_empty_square = 2
+
+        #the *isolated empty square* must have a 'w' in it if we have one
+        #otherwise a consonant
+        if 'w' in single_letters:
+            letter_to_place = 'w'
+        else:
+            letter_to_place = random.choice([x for x in single_letters if x in pū.consonants])
             
-        
+        single_letters.remove(letter_to_place)
+        koru[isolated_empty_square] = letter_to_place #2 squares remaining
 
-    
+        #get the *empty square in the middle row*
+        if digraph1_squares == (0,1) : empty_square_middle_row = 3
+        if digraph1_squares == (1,2) : empty_square_middle_row = 7
+        if digraph1_squares == (6,5) : empty_square_middle_row = 3
+        if digraph1_squares == (5,4) : empty_square_middle_row = 7
 
-    
+        #the *empty square in the middle row* must have a consonant in it if we 
+        #have one otherwise a vowel.
+        try:
+            letter_to_place = random.choice([x for x in single_letters if x in pū.consonants])
+        except IndexError:
+            #no consonants remaining
+            letter_to_place = random.choice([x for x in single_letters if x in pū.all_vowels])    
 
-    
+        single_letters.remove(letter_to_place)
+        koru[empty_square_middle_row] = letter_to_place #1 square remaining
 
-    
+        #fill the remaining square with whatever letter remains
+        for index, square in enumerate(koru):
+            if square is None:
+                letter_to_place = random.choice(single_letters)
+                single_letters.remove(letter_to_place)
+                koru[index] = letter_to_place
+    #DONE for 1 digraph
+
+    if digraphs_count == 0:
+        #no digraphs, so only the centre letter has been placed
+        #we have 8 letters left to place
+        if centre_letter in pū.all_vowels:
+            vowel_first = True
+        else:
+            vowel_first = False
+        for index, square in enumerate(koru[:-1]):
+            if index % 2 == 0: #0, 2, 4, 6
+                if vowel_first:
+                    letter_to_place = random.choice([x for x in single_letters \
+                                                        if x in pū.all_vowels])
+                else:
+                    try:
+                        letter_to_place = random.choice([x for x in single_letters \
+                                                            if x in pū.consonants])
+                    except IndexError:
+                        #no consonants remaining
+                        letter_to_place = random.choice([x for x in single_letters \
+                                                            if x in pū.all_vowels])
+            else: #1, 3, 5, 7
+                if vowel_first:
+                    try:
+                        letter_to_place = random.choice([x for x in single_letters \
+                                                            if x in pū.consonants])
+                    except IndexError:
+                        #no consonants remaining
+                        letter_to_place = random.choice([x for x in single_letters \
+                                                            if x in pū.all_vowels])
+                else:
+                    letter_to_place = random.choice([x for x in single_letters \
+                                                        if x in pū.all_vowels])
+            single_letters.remove(letter_to_place)
+            koru[index] = letter_to_place   
+#DONE for 0 digraphs
+    print(seed_word, koru)
+
 
 
 if __name__ == '__main__':
@@ -1021,8 +1146,8 @@ if __name__ == '__main__':
     get_all_koru_parser.set_defaults(function = get_all_koru)
 
     # create the parser for the get_nines_structure function
-    get_nines_structure_parser = subparsers.add_parser('get_nines_structure')
-    get_nines_structure_parser.set_defaults(function = get_nines_structure)
+    #get_nines_structure_parser = subparsers.add_parser('get_nines_structure')
+    #get_nines_structure_parser.set_defaults(function = get_nines_structure)
 
     # create the parser for the get_seed_word_structure function
     get_seed_word_structure_parser = subparsers.add_parser('get_seed_word_structure')
@@ -1033,6 +1158,10 @@ if __name__ == '__main__':
     get_koru_parser = subparsers.add_parser('get_koru')
     get_koru_parser.add_argument('-seed_word')
     get_koru_parser.set_defaults(function = get_koru)
+
+    # create the parser for the get_nines_subset function
+    get_nines_subset_parser = subparsers.add_parser('get_nines_subset')
+    get_nines_subset_parser.set_defaults(function = get_nines_subset)
 
     # parse the arguments
     arguments = parser.parse_args()
