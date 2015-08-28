@@ -33,6 +33,23 @@ def get_all_entries():
     return OrderedDict(sorted(all_entries.items(), key=mw.get_dict_sort_key))
 
 
+def get_all_entries_as_list():
+
+    all_entries = get_all_entries()
+    all_entries_as_list = []
+
+    for k,v in all_entries.items():
+        if k.twig is False:
+            #branch
+            all_entries_as_list.append(k.trunk)
+        else:
+            #twig
+            all_entries_as_list.append(k.twig)
+
+    all_entries_as_list = list(set(all_entries_as_list)) #unique only
+    return sorted(all_entries_as_list, key=mw.get_list_sort_key)
+    
+
 def get_headwords():
     '''
     The purpose of this method is to get all the headwords
@@ -99,8 +116,6 @@ def get_nominalisations(words_only = True):
         nominalised_words = []
         for k,v in nominalisations.items():
             for suffix in [x for x in v["pīmuri_whakaingoa"] if x]:
-                if not suffix:
-                    print(k)
                 if suffix.startswith(chr(8209)): #looks like a '-'
                     #append to either the trunk or the twig
                     if k.twig is False:
@@ -112,7 +127,7 @@ def get_nominalisations(words_only = True):
                 else:
                     nominalised_word = suffix #completely new word as nominalised form
                 nominalised_words.append(nominalised_word)
-        
+
         nominalised_words = list(set(nominalised_words)) #unique only
         return sorted(nominalised_words, key=mw.get_list_sort_key)
                     
@@ -149,63 +164,68 @@ def get_twigs(words_only = True, on_trunk_only = False):
         return OrderedDict(sorted(twigs.items(), key=mw.get_dict_sort_key))
 
 
-def get_word_forms():
+def get_word_forms(ese = True, n = True, p = True):
     '''
     The purpose of this function is to return all of the word forms
     from HPK.
     A word form is by definition unique
-    all twigs and 
     all compound words and
     any word which has uppercase letters in it
     will be *excluded*
-    passives and nominalisations to be dealt with later
     '''
-    all_entries = get_all_entries()
-    word_forms = []
+    word_forms = {}
+    Word_Forms = namedtuple('Word_Forms', 'ok not_ok')
 
-    for k,v in all_entries.items():
-        include = True
-        
-        if not k.twig is False:
-            #its a twig
-            include = False
+    if ese:
+        all_entries_as_list = get_all_entries_as_list() #assumed unique
+        ok = [x for x in all_entries_as_list if x == x.lower()] #only all lowercase
+        ok = [x for x in ok if mw._isalllegalletters(x)] #only if no punctuation
+        not_ok = list(set(all_entries_as_list) - set(ok))
 
-        if any(x in k.trunk for x in pū.intra_word_punctuation):
-            include = False
+        word_forms['ese'] = Word_Forms(sorted(ok, key=mw.get_list_sort_key), 
+                                       sorted(not_ok, key=mw.get_list_sort_key))
 
-        if pū.inter_word_punctuation in k.trunk:
-            include = False
+    if n:
+        all_nominalisations = get_nominalisations() #assumed unique
+        ok = [x for x in all_nominalisations if x == x.lower()] #only all lowercase
+        ok = [x for x in ok if mw._isalllegalletters(x)] #only if no punctuation
+        not_ok = list(set(all_nominalisations) - set(ok))
 
-        if k.trunk != k.trunk.lower():
-            include = False
+        word_forms['n'] = Word_Forms(sorted(ok, key=mw.get_list_sort_key), 
+                                       sorted(not_ok, key=mw.get_list_sort_key))
 
-        if include:
-            word_forms.append(k.trunk)
+    if p:
+        all_passives = get_passives() #assumed unique
+        ok = [x for x in all_passives if x == x.lower()] #only all lowercase
+        ok = [x for x in ok if mw._isalllegalletters(x)] #only if no punctuation
+        not_ok = list(set(all_passives) - set(ok))
 
-    word_forms = list(set(word_forms)) #only unique
-    return sorted(word_forms, key=mw.get_list_sort_key)
-    #return sorted(word_forms, key=len)    
-    
+        word_forms['p'] = Word_Forms(sorted(ok, key=mw.get_list_sort_key), 
+                                       sorted(not_ok, key=mw.get_list_sort_key))
+
+    return word_forms
 
 
-def get_children(input_string = 'pangakupu', 
-                 minimum_length = 3, 
-                 must_include_last_letter = True):
+def get_children(input_string, minimum_length = 3, must_include_last_letter = True):
     '''
     Returns a list containing all the word forms (children)
     that can be made from the input_string
-    '''
+    '''    
+
+    #if minimum length is passed as a string *try* and convert to integer
+    minimum_length = int(minimum_length)
 
     children = []
 
     input_string_to_use = mw._aslist(input_string)
 
-    unique_word_forms = get_word_forms()
-    for word in [x for x in unique_word_forms if len(x) >= minimum_length]:
+    unique_word_forms = get_word_forms(n = False, p = False)
+
+    for word in [x for x in unique_word_forms['ese'].ok if len(x) >= minimum_length]:
 
         word_to_use = mw._aslist(word)
 
-        is_child = False            
+        is_child = False
         if not (Counter(word_to_use) - Counter(input_string_to_use)):
             is_child = True
 
@@ -225,6 +245,8 @@ if __name__ == '__main__':
     import argparse
     import pprint
     import ast
+    import config  
+    from collections import Counter  
 
     # create the top-level parser
     parser = argparse.ArgumentParser()
@@ -233,6 +255,11 @@ if __name__ == '__main__':
     # create the parser for the get_all_entries function
     get_all_entries_parser = subparsers.add_parser('get_all_entries', help = '>>>>>> No arguments')
     get_all_entries_parser.set_defaults(function = get_all_entries)
+
+    # create the parser for the get_all_entries_as_list function
+    get_all_entries_as_list_parser = subparsers.add_parser('get_all_entries_as_list', 
+                                                            help = '>>>>>> No arguments')
+    get_all_entries_as_list_parser.set_defaults(function = get_all_entries_as_list)
 
     # create the parser for the get_headwords function
     get_headwords_parser = subparsers.add_parser('get_headwords', help = '>>>>>> No arguments')
@@ -254,8 +281,18 @@ if __name__ == '__main__':
     get_twigs_parser.add_argument('-on_trunk_only')
     get_twigs_parser.set_defaults(function = get_twigs)
 
+    # create the parser for the get_word_forms function
+    get_word_forms_parser = subparsers.add_parser('get_word_forms')
+    get_word_forms_parser.add_argument('-ese')
+    get_word_forms_parser.add_argument('-n')
+    get_word_forms_parser.add_argument('-p')
+    get_word_forms_parser.set_defaults(function = get_word_forms)    
+
     # create the parser for the get_children function
-    get_children_parser = subparsers.add_parser('get_children', help = '>>>>>> No arguments')
+    get_children_parser = subparsers.add_parser('get_children')
+    get_children_parser.add_argument('input_string')
+    get_children_parser.add_argument('-minimum_length')
+    get_children_parser.add_argument('-must_include_last_letter')
     get_children_parser.set_defaults(function = get_children)
 
     # parse the arguments
@@ -281,14 +318,32 @@ if __name__ == '__main__':
         arguments = { k : v for k,v in arguments.items() if v is not None }
 
         #alter any string 'True' or 'False' to bools
-        arguments = { k : ast.literal_eval(v) for k,v in arguments.items() if v in ['True','False'] }       
+        arguments = { k : ast.literal_eval(v) if v in ['True','False'] else v 
+                                              for k,v in arguments.items() }       
 
     result = function_to_call(**arguments) #note **arguments works fine for empty dict {}
    
     print (len(result))
     print (type(result))
     #pprint.pprint(result)
-    for k,v in result.items():
-        print(k)
+    if isinstance(result, list):
+        pprint.pprint(len(result))
+    elif isinstance(result, dict):
+        print ('ese ok', len(result['ese'].ok))
+        c = Counter(len(x) for x in result['ese'].ok)
+        c = dict(c)
+        for k in sorted(c.keys()):
+            print(k, c[k])
+        '''
+        cf = config.ConfigFile()
+        iwa_path = (cf.configfile[cf.computername]['iwa_path'])
+        iwa_filename = "all_words_for_iwa.json"
+        full_iwa_path = iwa_path + iwa_filename
+        with open(full_iwa_path, 'w') as f:
+            json.dump(result['ese'].ok, f)
+        '''
+    else:
+        print (type(result), 'surprise!')
+
 
 

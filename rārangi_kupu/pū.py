@@ -15,7 +15,11 @@ consonants = ('h', 'k', 'm', 'n', 'p', 'r', 't', 'w',
 
 dictionary_letters = ('A', 'E', 'H', 'I', 'K', 'M', 'N', 'Ng', 'O', 'P', 'R', 'T', 'U', 'W', 'Wh')
 
+all_single_letters = vowels + macronised_vowels + consonants
 all_letters = digraphs + vowels + macronised_vowels + consonants
+
+duals_left = ['w', 'n']
+duals_right = ['h']
 
 intra_word_punctuation = [' ', '-']
 inter_word_punctuation = ', '
