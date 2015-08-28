@@ -288,7 +288,7 @@ nines = (['āhikihiki',
  'ngatahure',
  'ngātatahi',
  'ngātātata',
- 'ngawhewhe',
+ #'ngawhewhe',
  'ngongirua',
  'ngongohau',
  'ngongotua',
@@ -801,7 +801,7 @@ nines = (['āhikihiki',
  'whākoekoe',
  'whānāriki',
  'whanaunga',
- 'whāngongo',
+ #'whāngongo',
  'whāomoomo',
  'whārarahi',
  'wharariki',
@@ -831,13 +831,13 @@ nines = (['āhikihiki',
  'wheketere',
  'whēorooro',
  'whetūriki',
- 'whewhengi',
+ #'whewhengi',
  'whiorangi',
  'whirinaki',
  'whitianga',
  'whitihoro',
- 'whiwhinga',
- 'whīwhiwhi',
+ #'whiwhinga',
+ #'whīwhiwhi',
  'whutupōro'])
 
 
@@ -883,11 +883,10 @@ def get_nines_subset():
     consts = []
     for nine in nines:
         nine_structure = get_seed_word_structure(nine)
-        if nine_structure['V'] == 4 and nine_structure['D'] == 1 and nine_structure['C'] == 3:
-            nine_consts = [x for x in mw._aslist(nine) if x in pū.consonants]
-            if 'w' in nine_consts:
-                print (nine, nine_consts)
-            consts.append(nine_consts)
+        nine_vowels = [x for x in mw._aslist(nine) if x in pū.all_vowels]
+        distinct_vowels = len(set(nine_vowels))
+        if distinct_vowels == 1:
+            print (nine, distinct_vowels)
     
     #c = Counter(tuple(consts))
     #print(c)
@@ -915,7 +914,6 @@ def get_koru(seed_word=None):
 
     #add 'centre letter' to koru, 8 squares remaining to be filled
     koru[8] = centre_letter
-
 
     #randomly select and randomly place the digraphs (if any)
     #note there are constraints to the randomness
@@ -1106,6 +1104,7 @@ def get_koru(seed_word=None):
                         letter_to_place = random.choice([x for x in single_letters \
                                                             if x in pū.consonants])
                     except IndexError:
+
                         #no consonants remaining
                         letter_to_place = random.choice([x for x in single_letters \
                                                             if x in pū.all_vowels])
@@ -1122,10 +1121,18 @@ def get_koru(seed_word=None):
                     letter_to_place = random.choice([x for x in single_letters \
                                                         if x in pū.all_vowels])
             single_letters.remove(letter_to_place)
-            koru[index] = letter_to_place   
+            koru[index] = letter_to_place
+            
+    print (seed_word, ''.join(koru))
+    return ''.join(koru)
 #DONE for 0 digraphs
-    print(seed_word, koru)
+    
 
+def get_koru_test():
+    for x in range(100000):
+        koru = get_koru()
+        print(koru)
+        print(pataka.get_children(koru))
 
 
 if __name__ == '__main__':
@@ -1158,6 +1165,10 @@ if __name__ == '__main__':
     get_koru_parser = subparsers.add_parser('get_koru')
     get_koru_parser.add_argument('-seed_word')
     get_koru_parser.set_defaults(function = get_koru)
+
+    # create the parser for the get_koru_test function
+    get_koru_test_parser = subparsers.add_parser('get_koru_test')
+    get_koru_test_parser.set_defaults(function = get_koru_test)
 
     # create the parser for the get_nines_subset function
     get_nines_subset_parser = subparsers.add_parser('get_nines_subset')

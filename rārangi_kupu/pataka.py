@@ -206,7 +206,7 @@ def get_word_forms(ese = True, n = True, p = True):
     return word_forms
 
 
-def get_children(input_string, minimum_length = 3, must_include_last_letter = True):
+def get_children(input_string, compulsory_letter, minimum_length = 3):
     '''
     Returns a list containing all the word forms (children)
     that can be made from the input_string
@@ -217,25 +217,21 @@ def get_children(input_string, minimum_length = 3, must_include_last_letter = Tr
 
     children = []
 
-    input_string_to_use = mw._aslist(input_string)
+    input_string_as_list = mw._aslist(input_string)
 
     unique_word_forms = get_word_forms(n = False, p = False)
 
     for word in [x for x in unique_word_forms['ese'].ok if len(x) >= minimum_length]:
 
-        word_to_use = mw._aslist(word)
+        word_as_list = mw._aslist(word)
 
         is_child = False
-        if not (Counter(word_to_use) - Counter(input_string_to_use)):
+        if not (Counter(word_as_list) - Counter(input_string_as_list)):
             is_child = True
 
-        if is_child:
-            if must_include_last_letter:
-                if input_string[-1] in word:
-                    children.append(word)    
-            else:
-                #it's a child and we don't care if it includes last letter or not
-                children.append(word)
+        if is_child and compulsory_letter in word_as_list:
+            children.append(word)
+    print(children)
     return(children)
 
     
@@ -291,8 +287,8 @@ if __name__ == '__main__':
     # create the parser for the get_children function
     get_children_parser = subparsers.add_parser('get_children')
     get_children_parser.add_argument('input_string')
+    get_children_parser.add_argument('compulsory_letter')
     get_children_parser.add_argument('-minimum_length')
-    get_children_parser.add_argument('-must_include_last_letter')
     get_children_parser.set_defaults(function = get_children)
 
     # parse the arguments
