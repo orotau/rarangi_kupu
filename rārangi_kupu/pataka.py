@@ -206,33 +206,7 @@ def get_word_forms(ese = True, n = True, p = True):
     return word_forms
 
 
-def get_children(input_string, compulsory_letter, minimum_length = 3):
-    '''
-    Returns a list containing all the word forms (children)
-    that can be made from the input_string
-    '''    
 
-    #if minimum length is passed as a string *try* and convert to integer
-    minimum_length = int(minimum_length)
-
-    children = []
-
-    input_string_as_list = mw._aslist(input_string)
-
-    unique_word_forms = get_word_forms(n = False, p = False)
-
-    for word in [x for x in unique_word_forms['ese'].ok if len(x) >= minimum_length]:
-
-        word_as_list = mw._aslist(word)
-
-        is_child = False
-        if not (Counter(word_as_list) - Counter(input_string_as_list)):
-            is_child = True
-
-        if is_child and compulsory_letter in word_as_list:
-            children.append(word)
-    print(children)
-    return(children)
 
     
 if __name__ == '__main__':
@@ -284,12 +258,7 @@ if __name__ == '__main__':
     get_word_forms_parser.add_argument('-p')
     get_word_forms_parser.set_defaults(function = get_word_forms)    
 
-    # create the parser for the get_children function
-    get_children_parser = subparsers.add_parser('get_children')
-    get_children_parser.add_argument('input_string')
-    get_children_parser.add_argument('compulsory_letter')
-    get_children_parser.add_argument('-minimum_length')
-    get_children_parser.set_defaults(function = get_children)
+
 
     # parse the arguments
     arguments = parser.parse_args()
@@ -325,12 +294,13 @@ if __name__ == '__main__':
     if isinstance(result, list):
         pprint.pprint(len(result))
     elif isinstance(result, dict):
+        pass
+        '''
         print ('ese ok', len(result['ese'].ok))
         c = Counter(len(x) for x in result['ese'].ok)
         c = dict(c)
         for k in sorted(c.keys()):
             print(k, c[k])
-        '''
         cf = config.ConfigFile()
         iwa_path = (cf.configfile[cf.computername]['iwa_path'])
         iwa_filename = "all_words_for_iwa.json"
