@@ -1,0 +1,9 @@
+Issues
+
+'hamo' not quite right in the on-line dictionary
+
+No part of speech
+It is upside down in the online dictionary
+This results in branch_number = 0 which is correct by the code but wrong by the intention.
+
+Will change the html file

@@ -1,0 +1,35 @@
+[(1, 'kōpūtahi'), (1, 'kaunga'), (1, 'kiatu'), (4, 'kau'), (1, 'kārangaranga'), (4, 'koe')]
+[(4, 'huka'), (1, 'hakuturi')]
+[(2, 'mano'), (4, 'mātā')]
+
+
+We will need to work out what to do about these
+
+They may actually exist but as twigs (more investigation required)
+
+The things that are clear
+There is a root
+There is a trunk
+There is a twig
+
+The things that are not clear
+If the trunk word form can exist by itself
+
+For example
+kōpūtahi
+This entry appears confused at best. 
+It would definitely suggest that the trunk word can exist by itself
+because that is exactly how it is used in the given example.
+
+kārangaranga
+This example suggests that the trunk word cannot exist by itself!
+This is consistent with all the other examples
+
+Problems that need to be solved
+How to model this situation
+How to allow the creation of a word list
+
+Proposed solution
+Model
+Model each example by setting branch = 0 and twig = 1
+
