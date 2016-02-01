@@ -12,7 +12,7 @@ class ConfigFile():
     # Otherwise you will just get the last entry for the computer!
 
     config_paths = {
-        'graham-laptop': '/home/graham/Dropbox/PythonProjects/rārangi_kupu/config.txt'
+        'graham-laptop': '/home/graham/PythonProjects/rārangi_kupu/config.txt'
         }
 
     def __init__(self):

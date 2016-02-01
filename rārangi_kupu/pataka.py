@@ -292,10 +292,22 @@ if __name__ == '__main__':
     print (type(result))
     #pprint.pprint(result)
     if isinstance(result, list):
-        pprint.pprint(len(result))
+        pprint.pprint(result)
     elif isinstance(result, dict):
-        pass
-        '''
+        tauira = {k:v for k,v in result.items() if v["tauira"]}
+        for k, v in tauira.items():
+            for t in v["tauira"]:
+                if "\n" in t:
+                    print(t.count("\n"))
+                    print(k)
+                    print(t)
+                    print("----------------------")
+        #with open("test.txt", "a") as myfile:
+        #    for k, v in tauira.items():
+        #       for t in v["tauira"]:
+        #            myfile.write(t + "\n")
+
+        '''au
         print ('ese ok', len(result['ese'].ok))
         c = Counter(len(x) for x in result['ese'].ok)
         c = dict(c)
