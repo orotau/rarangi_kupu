@@ -12,6 +12,7 @@ There will be specific issues that arise for each file (??)
 import config
 import os
 import pataka
+import maoriword as mw
 
 def query_yes_no(question, default="no"):
     """Ask a yes/no question via raw_input() and return their answer.
@@ -87,6 +88,8 @@ def create_text_file(file_id):
         all_tauira = [t.replace("\n", " ") for t in all_tauira]
         print(len(all_tauira))
 
+        all_tauira = sorted(all_tauira) # Pākehā style as maori code not working Feb 2016
+
         # write the file
         with open(text_file_path, "a") as myfile:
             for t in all_tauira:
@@ -106,7 +109,7 @@ if __name__ == '__main__':
     subparsers = parser.add_subparsers()
 
     # create the parser for the get_all_entries function
-    create_text_file_parser = subparsers.add_parser('create_text_file', help = '>>>>>> No arguments')
+    create_text_file_parser = subparsers.add_parser('create_text_file')
     create_text_file_parser.add_argument('file_id', choices = ['hpk_tauira',])
     create_text_file_parser.set_defaults(function = create_text_file)
 
