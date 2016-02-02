@@ -294,6 +294,7 @@ if __name__ == '__main__':
     if isinstance(result, list):
         pprint.pprint(result)
     elif isinstance(result, dict):
+        '''
         tauira = {k:v for k,v in result.items() if v["tauira"]}
         for k, v in tauira.items():
             for t in v["tauira"]:
@@ -306,13 +307,16 @@ if __name__ == '__main__':
         #    for k, v in tauira.items():
         #       for t in v["tauira"]:
         #            myfile.write(t + "\n")
+        '''
 
-        '''au
-        print ('ese ok', len(result['ese'].ok))
-        c = Counter(len(x) for x in result['ese'].ok)
+        print ('ese not ok', len(result['ese'].not_ok))
+        c = Counter(len(x) for x in result['ese'].not_ok)
         c = dict(c)
         for k in sorted(c.keys()):
             print(k, c[k])
+        for x in result['ese'].not_ok:
+            print(x)
+        '''
         cf = config.ConfigFile()
         iwa_path = (cf.configfile[cf.computername]['iwa_path'])
         iwa_filename = "all_words_for_iwa.json"

@@ -30,6 +30,6 @@ ua = Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) 
 #The dump path cannot be underneath Dropbox as dropbox does not handle filenames
 #that only differ by case.
 dump_path = /home/graham/PythonProjects/rārangi_kupu/web_dumps_html/
-
 json_path = /home/graham/PythonProjects/rārangi_kupu/word_trees/
 iwa_path = /home/graham/PythonProjects/rārangi_kupu/iwa/
+text_files_path = /home/graham/PythonProjects/rārangi_kupu/text_files/
