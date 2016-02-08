@@ -52,6 +52,7 @@ def create_text_file(file_id):
 
     TEXT_EXTENSION = "txt"
     TAUIRA_FILE_ID = "hpk_tauira" # duplicated with the choices in the call
+    HPK_COMPOUNDS_FILE_ID = "hpk_compounds"
 
     cf = config.ConfigFile()
     text_files_path = (cf.configfile[cf.computername]['text_files_path'])
@@ -79,6 +80,25 @@ def create_text_file(file_id):
         # we are only interested in those entries that have at least one tauira
         all_entries_with_tauira = {k:v for k,v in all_entries.items() if v["tauira"]}
 
+        #print those tauira that don't contain their 'headword'
+        '''
+        for k,v in all_entries_with_tauira.items():
+            if not k.twig:
+                key_word = k.trunk
+            else:
+                key_word = k.twig
+        
+            for t in v["tauira"]:
+                if key_word.lower() not in t.lower():
+                    if key_word.startswith('-') or key_word.endswith('-'):
+                        #not interested in prefixes or suffixes
+                        pass
+                    else:
+                        print (key_word, "SPACE", t)
+
+        return False
+        '''            
+
         # extract each tauira into a single long list
         for k, v in all_entries_with_tauira.items():
             for t in v["tauira"]:
@@ -98,6 +118,21 @@ def create_text_file(file_id):
         return True
 
 
+    if file_id == HPK_COMPOUNDS_FILE_ID:
+        all_word_forms = pataka.get_word_forms(p = False, n = False)
+
+        # write the file
+        with open(text_file_path, "a") as myfile:
+            for candidate_word in all_word_forms['ese'].not_ok:
+                if " " in candidate_word or "-" in candidate_word:
+                    # remove non-compound words
+                    compound_word = candidate_word                    
+                    myfile.write(compound_word + "\n")
+
+        return True
+         
+
+
 if __name__ == '__main__':
 
     import sys
@@ -110,7 +145,8 @@ if __name__ == '__main__':
 
     # create the parser for the get_all_entries function
     create_text_file_parser = subparsers.add_parser('create_text_file')
-    create_text_file_parser.add_argument('file_id', choices = ['hpk_tauira',])
+    create_text_file_parser.add_argument('file_id', choices = ['hpk_tauira',
+                                                               'hpk_compounds'])
     create_text_file_parser.set_defaults(function = create_text_file)
 
     # parse the arguments
