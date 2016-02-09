@@ -7,7 +7,7 @@ Each file will have a name to allow it to be referenced
 Before the file is created an existing version will be checked for
 If it is found then the user will be asked if they wish to overwrite
 
-There will be specific issues that arise for each file (??)
+There will be specific issues that arise for each file (such as spelling errors)
 '''
 import config
 import os
@@ -79,25 +79,6 @@ def create_text_file(file_id):
 
         # we are only interested in those entries that have at least one tauira
         all_entries_with_tauira = {k:v for k,v in all_entries.items() if v["tauira"]}
-
-        #print those tauira that don't contain their 'headword'
-        '''
-        for k,v in all_entries_with_tauira.items():
-            if not k.twig:
-                key_word = k.trunk
-            else:
-                key_word = k.twig
-        
-            for t in v["tauira"]:
-                if key_word.lower() not in t.lower():
-                    if key_word.startswith('-') or key_word.endswith('-'):
-                        #not interested in prefixes or suffixes
-                        pass
-                    else:
-                        print (key_word, "SPACE", t)
-
-        return False
-        '''            
 
         # extract each tauira into a single long list
         for k, v in all_entries_with_tauira.items():

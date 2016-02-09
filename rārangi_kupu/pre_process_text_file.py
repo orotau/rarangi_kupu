@@ -1,8 +1,11 @@
 '''
-The purpose of this module is to process the text files
-created by create_text_file.py
+The purpose of this module is to pre process the text file
+whose file_id is passed.
 
-This is for the purposes of word frequency analysis
+get_non_maori_words
+looks for those words which are non maori thus allowing
+the detection of any spelling mistakes
+
 '''
 
 import config
@@ -18,7 +21,7 @@ def is_number(s):
     else:
         return True
 
-def process_text_file(file_id):
+def get_non_maori_words(file_id):
 
     TEXT_EXTENSION = "txt"
     TAUIRA_FILE_ID = "hpk_tauira" # duplicated with the choices in the call
@@ -46,10 +49,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
-    # create the parser for the get_all_entries function
-    process_text_file_parser = subparsers.add_parser('process_text_file', help = '>>>>>> No arguments')
+    # create the parser for the get_non_maori_words function
+    process_text_file_parser = subparsers.add_parser('get_non_maori_words')
     process_text_file_parser.add_argument('file_id', choices = ['hpk_tauira',])
-    process_text_file_parser.set_defaults(function = process_text_file)
+    process_text_file_parser.set_defaults(function = get_non_maori_words)
 
     # parse the arguments
     arguments = parser.parse_args()
