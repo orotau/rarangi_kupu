@@ -90,10 +90,10 @@ def create_text_file(file_id):
         all_tauira = [t.replace("\n", " ") for t in all_tauira]
 
         # fix up any spelling mistakes
-        for t in all_tauira:
+        for index, t in enumerate(all_tauira):
             for sm in spelling_mistakes.spelling_mistakes[TAUIRA_FILE_ID]:
                 if sm[0] in t:
-                    t = t.replace(sm[0], sm[1])
+                    all_tauira[index] = t.replace(sm[0], sm[1])
 
         all_tauira = sorted(all_tauira) # Pākehā style as maori code not working Feb 2016
 

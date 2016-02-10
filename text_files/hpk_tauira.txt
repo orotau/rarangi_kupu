@@ -573,7 +573,7 @@ E ai ki ngā tikanga o te riri, ka whakaohiti a Te Rauparaha i ōna hoariri o Wa
 E ai ki ngā tohunga pūtaiao, i ahu mai tātou i te makimaki, engari kāore au e whakaae ki tērā.
 E ai ki ngā tohutohu i te puka pōti, me hoatu he tohu āe ki te taha o te rōpū tōrangapū kotahi.
 E ai ki taku māmā i taka mai au ki taku ihu tonu i taku whānautanga mai, koinei au e ihu pātiki nei.
-E ai ki tana kāwai whakaheke, nō te 4 o Hune l918 i mate ai; ka tāpukena ki tētehi tuapuke i runga ake i tōna kāinga i Whangapoua
+E ai ki tana kāwai whakaheke, nō te 4 o Hune 1918 i mate ai; ka tāpukena ki tētehi tuapuke i runga ake i tōna kāinga i Whangapoua
 E ai ki tana rātaka, hei te toru o tērā marama tā rāua hui.
 E ai ki te hōtaka, e toru ngā kapa ka tū i mua i a tātou.
 E ai ki te ine-rū, e 4.8 te kaha o taua rū.
@@ -4953,7 +4953,7 @@ He tokomaha ngā wāhine ka heu i ngā huruhuru i ō rātou kēkē.
 He tokomaha tonu mātou ki te kōwhiti pūpū.
 He tokomaha tonu ngā mātua Māori i mutu ai tā rātau kōrero Māori ki ā rātau tamariki i te kāinga, i reira ka raru nui te reo Māori
 He tokomaha tonu rātou ki te ā mai i ngā hōiho kūwao o taua koraha.
-He tokorua pukungarengare, te hia kore kē nei e mahue.
+He tokorua pukungangare, te hia kore kē nei e mahue.
 He tokotoko pōtete tō te koroua, nā tētahi o ana mokopuna i whakairo.
 He tomokanga ānau tō te kura, he mea whakairo katoa.
 He tona kei ngā rongomatua he kikī rawa nō ngā hū.
@@ -8638,7 +8638,7 @@ Ka makā atu ko te turipū, ka mate a Uenuku i a Māia
 Ka makā te tote, te huka, me te parāoa, ka kōrorirori ai
 Ka mama ake te wai i te pakaru nei
 Ka mama i te umu o te riariaki
-Ka mamae a raro tonu iho o ngā taringa i tēnei mate, i te mea kei reira ngā repe hūare.
+Ka mamae a raro tonu iho o ngā taringa i tēnei mate, i te mea kei reira ngā repe hūare pupuhi.
 Ka mamae aku kōmata i te kaha rawa o pēpi ki te ngote.
 Ka mamae ana, ka hē ana te wairua, ka riro mā te whāwhārua a ia e whakarata.
 Ka mamae tonu ngā hūhā me te tou o te tangata, kāore e waia ana ki te eke hōiho.
@@ -11484,7 +11484,7 @@ Ka whetūrangitia Matariki, te whetū o te tau e whakamoe mai rā
 Ka whewhera ngā tamariki i ā rātou pukapuka.
 Ka whio haere taku matua i ngā ata, kua mōhio mātou kei te pai wana piropiro.
 Ka whiria he taura hei whītikiranga ki te tāiki
-Ka whiria ngā io pepa e toru, ka whakairia ki te tuanui hei whakpaipai.
+Ka whiria ngā io pepa e toru, ka whakairia ki te tuanui hei whakapaipai.
 Ka whiriwhiria hoki te taha mō te Hāhi hei tanu i te tūpāpaku, i te mea i uru ia ki te Hāhi Katorika, ka whakaaetia mā te Hāhi Katorika anō ia e tanu
 Ka whiti atu i te rohe o Parakana, he iwi rerekē noa atu te āhua, rerekē hoki ngā kahu, rerekē ngā tikanga
 Ka whiti mai te rā i te rāwhiti, ka tō ki te hauāuru.
@@ -15103,7 +15103,7 @@ Ko te rangatira ehara i te mea he mea nō waho engari nō roto; ehara i te mea m
 Ko te rangatira kaitaotao i te taha mauī o te matua e whakakapakapa ana i te rau o tana mere
 Ko te rangatira o te iwi kāinga ka noho ki te kopa iti o te whare.
 Ko te rangatiratanga o te wahine nei, he atawhai ki ngā tāngata o tōna iwi
-Ko te rangi i noho ai te Atua, ko Toi-o-ngā-rangi, arā ko Tikitiki-o -rangi
+Ko te rangi i noho ai te Atua, ko Toi-o-ngā-rangi, arā ko Tikitiki-o-rangi
 Ko te rangi i pai rā kua pōkino katoa.
 Ko te rangi i pai rā kua tāmaru, me te makariri anō.
 Ko te rangi i pai rā kua tāmarutia e te pōkēao
@@ -18112,7 +18112,7 @@ Kāore tētahi wehenga o te motu i pai ki a ia hei Pirimia, ka pakaru mai te rir
 Kāore tō waka e whakaaetia ki te huarahi ki te kore ngā tārakerake e mahi.
 Kāore ā mātou whakaparahako mō ngā kōrero kāwanatanga, nō te mea kīhai te Ariki i whakaparahako ki ērā mea; heoi anō tāna ko te whakatūpato i te tangata kei romia ōna whakaaro katoa e ērā hanga
 Kāore āna hāwini, engari i whirinaki ia ki ōna whanaunga hai ringa āwhina mōna ki te whāngai i ngā ope nui whakaeke
-Kāore āna mahi tūturu - ka whakatītohe haere noa me te toro i ngā whanaunga.
+Kāore āna mahi tūturu - ka whakatīhohe haere noa me te toro i ngā whanaunga.
 Kāore ēnei o tana iwi i ora mō rātou i takahi i tana kupu. I muri tata mai ka pāngia e te mate ā mate rawa atu
 Kāore ēnei whakapapa i tākina e ngā tohunga i mua i te marea.
 Kāore ēnā kākahu e huatau ana, me hutu, me neketai.
