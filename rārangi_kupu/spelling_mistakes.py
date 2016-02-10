@@ -7,5 +7,11 @@ file pre-processing and their replacements
 TAUIRA_FILE_ID = "hpk_tauira" # duplicated with the choices in the call
 spelling_mistakes = {}
 
-spelling_mistakes[TAUIRA_FILE_ID] = [("l918", "1918"), \
-                                     ("whakpaipai", "whakapaipai")]
+spelling_mistakes[TAUIRA_FILE_ID] = ([
+    ("l918", "1918"),
+    ("whakpaipai", "whakapaipai"),  
+    ("Tikitiki-o -rangi", "Tikitiki-o-rangi"),
+    ("He tokorua pukungarengare", "He tokorua pukungangare"),
+    ("whakatītohe", "whakatīhohe"),
+    ("repe hūare.", "repe hūare pupuhi."),
+    ])

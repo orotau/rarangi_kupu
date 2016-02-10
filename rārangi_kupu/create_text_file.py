@@ -13,6 +13,7 @@ import config
 import os
 import pataka
 import maoriword as mw
+import spelling_mistakes
 
 def query_yes_no(question, default="no"):
     """Ask a yes/no question via raw_input() and return their answer.
@@ -87,7 +88,12 @@ def create_text_file(file_id):
         
         # replace any stray "\n" with a space ' '       
         all_tauira = [t.replace("\n", " ") for t in all_tauira]
-        print(len(all_tauira))
+
+        # fix up any spelling mistakes
+        for t in all_tauira:
+            for sm in spelling_mistakes.spelling_mistakes[TAUIRA_FILE_ID]:
+                if sm[0] in t:
+                    t = t.replace(sm[0], sm[1])
 
         all_tauira = sorted(all_tauira) # Pākehā style as maori code not working Feb 2016
 
