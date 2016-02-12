@@ -53,7 +53,7 @@ def create_text_file(file_id):
 
     TEXT_EXTENSION = "txt"
     TAUIRA_FILE_ID = "hpk_tauira" # duplicated with the choices in the call
-    HPK_COMPOUNDS_FILE_ID = "hpk_compounds"
+    HPK_OPEN_COMPOUNDS_FILE_ID = "hpk_open_compounds"
 
     cf = config.ConfigFile()
     text_files_path = (cf.configfile[cf.computername]['text_files_path'])
@@ -105,17 +105,16 @@ def create_text_file(file_id):
         return True
 
 
-    if file_id == HPK_COMPOUNDS_FILE_ID:
+    if file_id == HPK_OPEN_COMPOUNDS_FILE_ID:
         all_word_forms = pataka.get_word_forms(p = False, n = False)
 
         # write the file
         with open(text_file_path, "a") as myfile:
             for candidate_word in all_word_forms['ese'].not_ok:
-                if " " in candidate_word or "-" in candidate_word:
+                if " " in candidate_word:
                     # remove non-compound words
                     compound_word = candidate_word                    
                     myfile.write(compound_word + "\n")
-
         return True
          
 
@@ -133,7 +132,7 @@ if __name__ == '__main__':
     # create the parser for the get_all_entries function
     create_text_file_parser = subparsers.add_parser('create_text_file')
     create_text_file_parser.add_argument('file_id', choices = ['hpk_tauira',
-                                                               'hpk_compounds'])
+                                                               'hpk_open_compounds'])
     create_text_file_parser.set_defaults(function = create_text_file)
 
     # parse the arguments

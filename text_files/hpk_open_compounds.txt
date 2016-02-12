@@ -71,9 +71,6 @@ ate whanewhane
 ati ā-toa
 atiki rori
 ā tōna wā
-Atua-mate-o-hotu
-Atua-whakahaehae
-Atutahi-mā-Rehua
 aua atu
 auahi roa
 aua matawhero
@@ -105,15 +102,12 @@ hāmama popoia
 hamo pango
 hanga kino
 hapī tawa
-hau-
 hauhau manu
 hau kāinga
 haukoti i te aroaro
 hau kōwhai
 hau mākato
 hau māota
-Haumia-tiketike
-Haumia-tikitiki
 hau o te takiwā
 hau takiwā
 hau whitia
@@ -128,7 +122,6 @@ hē ngā piropiro
 hē ngā rā
 henga tōpuni
 hē te manawa
-hia-
 hihi matakiore
 hihi mua
 hihi paka
@@ -140,8 +133,6 @@ Hina keha
 hine kaikōmako
 hinu taramea
 hiramai te whatumoana
-Hiringa-ā-nuku
-Hiringa-ā-rangi
 hoa ngangare
 hoa rākau
 hoa rangatira
@@ -153,12 +144,10 @@ hoe ākau
 hoe piripiri
 hoe waka
 hohou (i te) rongo
-hoko-
 hōpara makaurangi
 houhi ongaonga
 hua paru
 hue kiato
-Huihui-o-te-Kakau
 huka kapo
 hunga tāpoi
 hunga wera
@@ -216,7 +205,6 @@ kāhu pango
 kāhu pōkere o te whenua
 kahu tāniko
 kahu waero
-kai-
 kai angaanga
 kai a te ahi
 kai a te kurī
@@ -326,7 +314,6 @@ Kawenata Hou
 Kawenata Tawhito
 kawititanga o te ringa(ringa)
 kē atu
-kere-
 kete aronui
 kete kōwarawara
 kete pāhao
@@ -384,16 +371,6 @@ kopa whakawiri tītoki
 kōpere tupua
 kōpua kānaenae
 kōrari tuauru
-Korekore-hahani
-Korekore-piri-ki-ngā-Tangaroa
-Korekore-piri-ki-Tangaroa
-Korekore-piri-ki-te-Tangaroa
-Korekore-tē-rawea
-Korekore-tē-whiwhia
-Korekore-tūrua
-Korekore-tūtahi
-Korekore-whakapiri-ki-ngā-Tangaroa
-Korekore-whakatehe
 kōremu i te murikōkai
 kōrero ahiahi
 kōrero parau
@@ -439,7 +416,6 @@ kura tuatahi
 kūreperepe a-tai
 kūreperepe moana
 kutukutu ahi
-mā-
 mahere whenua
 mahihi ora
 mahi kaute
@@ -520,7 +496,6 @@ māra tautāne
 mare heihei
 maremare tai
 mare motu
-Marere-o-tonga
 mare tekekō
 maro huka
 maro nui
@@ -579,7 +554,6 @@ mau taringa
 māwake rangitahi
 mea ake
 mea kau ake
-Meremere-tū-ahiahi
 mere tipatipa
 miha pakake
 mimingo kata
@@ -630,7 +604,6 @@ mutu kākā
 mutu kererū
 mutunga ika
 mutunga kore
--nā
 naenae te manawa
 namu katipō
 nanua pounamu
@@ -638,7 +611,6 @@ nā reira
 nā te mea
 nau mai
 nehu raupō
--nei
 ne i
 nē rā
 nē raka
@@ -752,7 +724,6 @@ papa kāinga
 papaki harakeke
 papa kotakota
 papa kura iti
-Papanui-a-Hāwea
 papa o te angaanga
 papa pātua
 papa tākaro
@@ -801,7 +772,6 @@ pepe tāmure
 pepe te muimui
 pepe tuna
 pere rua
-Pewa-a-Tautoru
 pewa ika
 piki kōtuku
 piki tūranga
@@ -863,7 +833,6 @@ puapua o autahi
 puapua tai
 puapua tauā
 pū a Raukatauri
-Puatawhiwhi-o-Tautoru
 puehu parāoa
 pūhā pororua
 pūhā tiotio
@@ -916,21 +885,16 @@ pūrei ao
 pūrei kohu
 pū repo
 puru rourou
-Pūtahi-nui-o-Rehua
 puta ki waho
 puta noa
 puta taua
 puta te ihu
 pū tiripapā
--rā
 rākau whakarawe
 rami tuna
 rangaranga te muri
-Rangi-nao-nao-ariki
-Rangi-nui-a-tāmaku
 rangi paruhi
 rangi takō
-Rangi-tū-ahiahi
 rangi weherua
 rā o te waru
 rapa maire
@@ -951,7 +915,6 @@ rauru motu
 rau tawake
 rawa atu
 rāwaru pounaho
-Rehua-i-te-rangi
 rekanga kanohi
 renga hōrū
 reo irirangi
@@ -999,15 +962,12 @@ rūanga tao
 rua tirawa
 rua tūpō
 rūma ako
-tā-
 tāepaepatanga o te rangi
 taha pounamu
 tāhau o te ringa
 tahi (i te) tahua
-Tahi-o-Pipiri
 tahua riringa
 tāhuna pakipaki
-Tahu-nui-a-Rangi
 tahuti mai
 tai koko
 tai rere
@@ -1025,15 +985,8 @@ takahi (i te) whare
 takahikare moana
 takahi tuna
 takapau pōkai
-taki-
-Taki-o-Autahi
 taki tupuna
 tā kōtuku
-Takurua-a-Io
-Takurua-a-ngana
-Takurua-a-uru
-Takurua-parewai
-Takurua-whare-ana
 takutaku atua
 tākuta niho
 tama a hara
@@ -1046,20 +999,7 @@ tamaiti taurima
 tamaiti whāngai
 tama ngarengare
 tama roto
-tamatama-a-rangi
 tama tāne
-Tamatea-āio
-Tamatea-ā-ngana
-Tamatea-kai-ariki
-Tamatea-kaiariki-whakapau
-Tamatea-tuarua
-Tamatea-tuatoru
-Tamatea-tuawhā
-Tamatea-tūrua
-Tamatea-tū-tahi
-Tamatea-tūtoru
-Tamatea-tūwhā
-Tamatea-whakapau
 tama tu ki roto
 tame heihei
 tami waha
@@ -1068,10 +1008,6 @@ Tāne te waiora
 tāngaengae o te rua
 tānga ika
 tāngā kai
-Tangaroa-a-mua
-Tangaroa-a-roto
-Tangaroa-kiokio
-Tangaroa-whakapau
 tāngata atoato
 tangata pora
 tangata raweke rawa
@@ -1083,7 +1019,6 @@ tangi ātahu
 tangi tawhiti
 tāone nui
 tao waka
-tapa-
 tapa o te kūhā
 tapawhā hāngai
 tapawhā rite
@@ -1096,8 +1031,6 @@ tara kore
 tara nui
 tara o Tawheo
 tara pirohe
-taratara-a-Kai
-taratara-o-Kai
 tara teo
 tara teoteo
 tarau poto
@@ -1124,7 +1057,6 @@ tātai aro rangi
 tātai mate
 Tātai o Matariki
 tātai whetū
-Tatā-o-Tautoru
 tātā pere
 tātarāmoa turuhunga
 tatau o te pō
@@ -1134,7 +1066,6 @@ tātua kōtara
 tātua o Hikakawa
 tātua o Te Kaha
 tātu parāoa
-tau-
 taua ā-poke
 taua ngaki mate
 taua toto
@@ -1146,7 +1077,6 @@ taura hiko
 taura ine
 tauranga ika
 tauri kōmore
-Tautahi-o-rongo
 tautoko ā-pūtea
 tāwaha nui
 tawai kakako
@@ -1191,7 +1121,6 @@ tete whai
 tētē whero
 te tini o te hakuturi
 Te Tipi
-Te-Tira-o-Puanga
 Te Toi-o-ngā-rangi
 Te Tuahiwi-o-Ranginui
 Te Tuke-o-Māui
@@ -1210,8 +1139,6 @@ tihe wera
 tīhore mangu
 tīhore whero
 tī kāuka
-Tikitiki-o-ngā-rangi
-Tikitiki-o-rangi
 tī koraha
 tī kōuka
 tino rangatiratanga
@@ -1233,7 +1160,6 @@ tira rōreka
 tī rauriki
 tira waiata
 tī ringa
-Tiritiri-o-Matangi
 tītara aruhe
 tītara kāhu
 titi roa
@@ -1267,9 +1193,7 @@ toki poutangata
 toki tītaha
 toki whakapae
 toki whakarau
-toko-
 tō marino
-tonga-mā-uru
 tonga ngawī
 tonga tauwhare
 tonga tāwaha
@@ -1290,14 +1214,10 @@ toroa pango
 toroa ruru
 toroa tatakī
 toroa whakaingo
-Toru-Here-o-Pipiri
-Toru-Heri-o-Pipiri
-Toru-o-Hereturikōkā
 tōtara kiri kōtukutuku
 tōtara kōtukutuku
 tou tīrairaka
 tō whakaroto
-tua-
 tūāhu o te rangi
 tuai kerekere
 tūā moe
@@ -1365,7 +1285,6 @@ tuturi pourewa
 tuturu pourewa
 tūtū waewae
 tū wharariki
-ua-
 ua kōehuehu
 ua kōnenehu
 ua kōpiro
@@ -1376,7 +1295,6 @@ ua tāhengihengi
 ua tātā
 ua tā whakarere
 ua whatu
-Uenuku-tū-wae-rua
 uhi perei
 ui makihoi
 umu karihau
@@ -1394,7 +1312,6 @@ umu waharoa
 upoko mārō
 ure pūkaka
 ure tārewa
-uru-mā-raki
 uru tūrehu
 uru whetū
 utuutu matua
@@ -1428,7 +1345,6 @@ wai mongamonga
 wai ngārahu
 wai ngārehu
 wai ponapona
-Waipuna-a-rangi
 Wairua Tapu
 wai tai
 wai tokorau
@@ -1447,23 +1363,16 @@ waowao nunui
 waru patote
 weherua pō
 weka pango
-Wero-i-te-aomārie
-Wero-i-te-kokota
-Wero-i-te-ninihi
-Wero-i-te-whakataka-pungarehu
 wero kutu
 wero taringa
-Wero-te-aumaria
 wētā punga
 wiri waewae
-whā-
 whaea kēkē
 whaea whakaangi
 whai keo
 whāinga paetae
 whai pāhau
 whai repo
-whaka-
 whakaahua whakaroto
 whakaheke ngaru
 whākai o tama
@@ -1500,7 +1409,6 @@ whāngai hau
 whāngai karoro
 whāngai mokopuna
 whāngai rangatira
-Whā-o-Mahuru
 whara hune
 whara kai
 wharangi kura
@@ -1564,7 +1472,4 @@ whenua maru
 whetū puhipuhi
 whīnau puka
 whiore hume
-Whiringa-ā-nuku
-Whiringa-ā-rangi
-whiringa-ā-tau
 whiri pāraharaha

@@ -64,16 +64,46 @@ closed_compound = r"""
 )
 """
 
-capitalised_word = r"""
+capitalised_non_closed_compound_word = r"""
 
-(?:
-                 
+(?<!
+-                       # Don't select part of a closed compound
+)
+               
 (?:
 \b
-[AEIOUĀĒĪŌŪHKMNPRTW]    #capital letter to start
-\w+                     #one or more alphanumeric characters
+[A-ZĀĒĪŌŪ]              # capital letter to start
+[a-zāēīōū]*             # zero or more alphabetic characters
 \b
 )
 
+(?!
+-                       # Don't select part of a closed compound
 )
+"""
+
+
+sentence_boundaries = r"""
+
+(?:
+\A                      # Start of text chunk only
+['""]
+[ ]*
+)
+
+|
+
+(?:
+[ ]+
+['"]
+[ ]*
+)
+
+|
+
+(?:
+[.?!]
+[ ]+
+)
+
 """
