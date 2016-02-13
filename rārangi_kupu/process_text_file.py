@@ -10,8 +10,8 @@ from collections import namedtuple
 import os
 import re
 import maori_regex
+import teina
 
-chunked_lines = {}
 Text_Chunk = namedtuple('Text_Chunk', 'text_chunk start end type')
 
 def is_number(s):
@@ -21,6 +21,59 @@ def is_number(s):
         return False
     else:
         return True
+
+
+def get_open_compounds_list(file_id):
+
+    # the file_id is used for the list of teina
+
+    HPK_OPEN_COMPOUNDS_FILE_NAME = "hpk_open_compounds.txt"
+    OTHER_OPEN_COMPOUNDS_FILE_NAME = "other_open_compounds.txt"
+
+    cf = config.ConfigFile()
+    text_files_path = (cf.configfile[cf.computername]['text_files_path'])
+
+    open_compounds_list = []
+
+    hpk_open_compounds_file_path = \
+    text_files_path + HPK_OPEN_COMPOUNDS_FILE_NAME
+ 
+    other_open_compounds_file_path = \
+    text_files_path + OTHER_OPEN_COMPOUNDS_FILE_NAME 
+
+    with open(hpk_open_compounds_file_path, 'r') as f:
+        for line in f:
+            open_compounds_list.append(line.replace('\n', ''))
+
+    with open(other_open_compounds_file_path, 'r') as f:
+        for line in f: 
+            open_compounds_list.append(line.replace('\n', ''))  
+
+    # add any teina that are themselves open compounds
+    # and have a big brother in the list of open compounds
+    for big_brother, little_brothers in teina.teina[file_id]:
+        if big_brother in open_compounds_list:
+            for little_brother in little_brothers:
+                if ' ' in little_brother:                    
+                    open_compounds_list.append(little_brother)
+        else:
+            # big brother not in the list of open compounds
+            if ' ' in big_brother:
+                print("Must add " + big_brother + " to open compounds")
+                return False
+            else:
+                # not an open compound but it could have open compound teina
+                for little_brother in little_brothers:
+                    if ' ' in little_brother:                    
+                        open_compounds_list.append(little_brother)                 
+
+    # sort the list by length (longest at start)
+    # to avoid say finding 'the banana' and never finding
+    # 'longer version of the banana'
+
+    open_compounds_list.sort(key=len, reverse=True)
+
+    return open_compounds_list
 
 def decapitalise(text_chunk):
     '''
@@ -34,6 +87,7 @@ def decapitalise(text_chunk):
     c) It is preceded by . (1 or more spaces)
     d) It is preceded by ? (1 or more spaces)
     e) It is preceded by ! (1 or more spaces)
+    f) c) is refined to leave alone a name like T. W. Downes
 
     'Te' or 'Ngā' are excluded
 
@@ -51,7 +105,6 @@ def decapitalise(text_chunk):
         cncc_words = re.finditer(regex_string, text_chunk, re.VERBOSE)
         for each_match in cncc_words:
             if each_match.group() not in excluded_words:
-                print(each_match.group())
                 if each_match.start() == 0:
                     # first word in text_chunk
                     text_chunk_to_return[0] = text_chunk[0].lower()
@@ -96,8 +149,6 @@ def decapitalise(text_chunk):
         pass
 
     text_chunk_to_return = ''.join(text_chunk_to_return)
-    print (text_chunk_to_return)
-    print("------------------------------")
     
     return text_chunk_to_return   
         
@@ -107,23 +158,39 @@ def decapitalise(text_chunk):
 def process_text_file(file_id):
 
     TEXT_EXTENSION = "txt"
-    TAUIRA_FILE_ID = "hpk_tauira" # duplicated with the choices in the call
 
     cf = config.ConfigFile()
     text_files_path = (cf.configfile[cf.computername]['text_files_path'])
     text_file_path = text_files_path + file_id + os.extsep + TEXT_EXTENSION
 
-    with open(text_file_path, 'r') as f:
-        for line_number, line in enumerate(f):
-            decapitalise(line)
+    # get the open compounds list to use to search for
+    ocs = get_open_compounds_list(file_id)
 
-            '''
-            #Group 1 - HPK Open Compounds - type = "hpkoc"
-            all_words = re.finditer(r"\w+", line)
-            for position, each_match in enumerate(all_words):
-                if position == 1 and each_match.group()[0].isupper():
-                    print(line_number, line)
-            '''
+    chunked_lines = {}
+
+    with open(text_file_path, 'r') as f:
+        for line_number_minus_one, line in enumerate(f):
+            line_number = line_number_minus_one + 1
+            line_to_chunk = decapitalise(line)
+            
+            #initialise dictionary
+            chunked_lines[line_number] = None
+
+            #Group 1 - Open Compounds
+            CHUNK_TYPE = "oc"
+            for oc in ocs:
+                oc_matches = re.finditer(r'\b' + oc + r'\b', line_to_chunk)
+                for oc_match in oc_matches:
+                    print(line_number + 1, oc_match)
+                    create_text_chunk(chunked_lines[line_number],
+                                      oc_match.group(),
+                                      oc_match.start(),
+                                      oc_match.end(),
+                                      CHUNK_TYPE)
+                                          
+                                          
+            
+
 
 if __name__ == '__main__':
 

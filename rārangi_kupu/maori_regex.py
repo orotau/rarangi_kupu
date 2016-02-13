@@ -3,16 +3,16 @@ This module contains the regexes used in
 the word frequency work
 '''
 
-# Get the non-compound maori words using regex
 maori_word = r"""
 \b                      # capture whole words only
 
 (?:
 
-(?:                     # group so we can use the +
-                        # non-capturing so the whole word is returned
-ng|                     # needs to be before the n
-wh|                     # needs to be before the w and h
+(?:                     
+ng                      # needs to be before the n
+|
+wh                      # needs to be before the w and h
+|
 [hkmnprtw]
 )
 ?                       # 0 or 1 times
@@ -87,22 +87,33 @@ sentence_boundaries = r"""
 
 (?:
 \A                      # Start of text chunk only
-['""]
-[ ]*
+['"]                    # single or double quote
+[ ]*                    # 0, 1 or more spaces
+)
+
+|                       # or
+
+(?:
+[ ]+                    # 1 or more spaces
+['"]                    # single or double quote
+[ ]*                    # 0, 1 or more spaces
 )
 
 |
 
 (?:
+[?!]
 [ ]+
-['"]
-[ ]*
 )
 
 |
 
 (?:
-[.?!]
+(?<!            #Avoid matching a name like T. D. Smith
+[ ]             #works so long as it is not the first thing in the text chunk
+[A-Z]
+)
+[.]
 [ ]+
 )
 

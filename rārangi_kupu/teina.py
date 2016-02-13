@@ -12,6 +12,8 @@ all the time, I will search for "kōkopu rūwao" as well as "kōkopu ruwao"
 and amalgamate the results
 '''
 
+TAUIRA_FILE_ID = 'hpk_tauira'
+
 teina = {}
 
 teina[TAUIRA_FILE_ID] = ([
@@ -40,7 +42,7 @@ teina[TAUIRA_FILE_ID] = ([
     ("pōtaka kōtore rua", ["pōtaka kotore rua"]),
     ("puta te ihu", ["puta ai te ihu"]),
     ("tahi (i te) tahua", ["tahi te tahua"]),
-    ("takahi (i te) whare ", ["takahi whare"]),
+    ("takahi (i te) whare", ["takahi whare"]),
     ("tama tu ki roto", ["tama tū ki roto"]),
     ("tangata whenua", ["tāngata whenua"]),
     ("tātai aro rangi", ["tātai arorangi"]),
