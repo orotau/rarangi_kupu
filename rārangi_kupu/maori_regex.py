@@ -31,7 +31,7 @@ sequential_capitalised_words = r"""
 (?:
 [A-ZĀĒĪŌŪ]              # capital letter to start
 [a-zāēīōū]+             # one or more alphanumeric characters
-\s+                     # one or more spaces
+[ ]+                     # one or more spaces
 )
 +                       # one or more
 
@@ -48,23 +48,50 @@ sequential_capitalised_words = r"""
 
 """
 
-closed_compound = r"""
+isolated_closed_compound_word = r"""
 
 (?:    
 
 (?:
-\w+                     # one word 
+[A-Za-zĀĒĪŌŪāēīōū]+     # one word 
 )
 
 (?:  
 -                       # dash
-\w+                     # one word
+[A-Za-zĀĒĪŌŪāēīōū]+     # one word
 )+                      # one or more times
 
 )
 """
 
-capitalised_non_closed_compound_word = r"""
+mixed_open_compound = r"""
+
+# capitalised non-closed-compound word
+(?:
+\b
+[A-ZĀĒĪŌŪ]              # capital letter to start
+[a-zāēīōū]*             # zero or more alphabetic characters
+[ ]+                    # 1 or more spaces
+)
+
+
+# capitalised closed compound
+(?:    
+
+(?:
+[A-ZĀĒĪŌŪ]              # capital letter to start
+[a-zāēīōū]+              
+)
+
+(?:  
+-                       # dash
+[A-Za-zĀĒĪŌŪāēīōū]+     # one word
+)+                      # one or more times
+
+)
+"""
+
+capitalised_non_compound_word = r"""
 
 (?<!
 -                       # Don't select part of a closed compound
@@ -82,8 +109,28 @@ capitalised_non_closed_compound_word = r"""
 )
 """
 
+lower_case_non_compound_word = r"""
 
-sentence_boundaries = r"""
+(?<!
+-                       # Don't select part of a closed compound
+)
+               
+(?:
+\b
+[a-zāēīōū]+             # one or more alphabetic characters
+\b
+)
+
+(?!
+-                       # Don't select part of a closed compound
+)
+"""
+
+sentence_boundaries = []
+
+
+sentence_boundaries.append(r"""
+
 
 (?:
 \A                      # Start of text chunk only
@@ -91,7 +138,9 @@ sentence_boundaries = r"""
 [ ]*                    # 0, 1 or more spaces
 )
 
-|                       # or
+""")
+
+sentence_boundaries.append(r"""
 
 (?:
 [ ]+                    # 1 or more spaces
@@ -99,15 +148,28 @@ sentence_boundaries = r"""
 [ ]*                    # 0, 1 or more spaces
 )
 
-|
+""")
+
+sentence_boundaries.append(r"""
 
 (?:
-[?!]
+[:]
 [ ]+
 )
 
-|
+""")
 
+sentence_boundaries.append(r"""
+
+(?:
+[.?!]
+['"]?
+[ ]+
+)
+
+""")
+
+sentence_boundaries.append(r"""
 (?:
 (?<!            #Avoid matching a name like T. D. Smith
 [ ]             #works so long as it is not the first thing in the text chunk
@@ -117,4 +179,11 @@ sentence_boundaries = r"""
 [ ]+
 )
 
+""")
+
+misc = r"""
+(?:
+[^A-Za-zĀĒĪŌŪāēīōū\W]+
+)
 """
+
