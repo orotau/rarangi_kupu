@@ -3,6 +3,30 @@ This module contains the regexes used in
 the word frequency work
 '''
 
+def get_oc_regex(open_compound):
+    '''
+    This function gets the open compound to search for
+    and returns the regex that will find it
+    Ensures that we don't consume part of a closed compound
+    '''
+
+    oc_regex_start = r"""
+    (?<!
+    -                   # Don't select part of a closed compound
+    )
+    """
+
+    oc_regex_middle = r"\b" + open_compound + r"\b"
+
+    oc_regex_end = r"""
+    (?!
+-                       # Don't select part of a closed compound
+    )
+    """
+
+    return oc_regex_start + oc_regex_middle + oc_regex_end
+    
+
 maori_word = r"""
 \b                      # capture whole words only
 

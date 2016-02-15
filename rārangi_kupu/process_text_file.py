@@ -221,7 +221,15 @@ def create_Text_Chunk(existing_Text_Chunks, text_chunk, chunk_start, chunk_end, 
     
 
                     
-def process_text_file(file_id):
+def process_text_file(file_id, first_line, last_line):
+
+    first_line = int(first_line)
+    last_line = int(last_line)
+
+    if first_line > last_line:
+        import sys
+        print("First Line can't be greater than Last Line")
+        sys.exit()
 
     TEXT_EXTENSION = "txt"
 
@@ -235,181 +243,44 @@ def process_text_file(file_id):
     chunked_lines = {}
 
     with open(text_file_path, 'r') as f:
-        for line_number_minus_one, line in enumerate(f):
-            line_number = line_number_minus_one + 1
-            # if line_number > 3: break
-            line_to_chunk = decapitalise(line)
-            # print(line_to_chunk)
-            
-            #initialise dictionary
-            chunked_lines[line_number] = []
+        text_file_to_check = f.readlines()
+        lines_in_file = len(text_file_to_check)
+        text_file_to_check.insert(0, None) # align index # with line number
 
-            '''
+    # create a list of tuples (line number, line)
+    # containing the lines we want to chunk
+    lines_to_check = []    
 
-            #Group 1 - Open Compounds
-            CHUNK_TYPE = "oc"
-            for oc in ocs:
-                oc_matches = re.finditer(r'\b' + oc + r'\b', line_to_chunk)
-                for oc_match in oc_matches:
-                    print(line_number, oc_match)
-                    try:
-                        return_from_create_Text_Chunk = \
-                            create_Text_Chunk(chunked_lines[line_number],
-                            oc_match.group(),
-                            oc_match.start(),
-                            oc_match.end(),
-                            CHUNK_TYPE)
-                    except NameError:
-                        print("something has gone wrong")
-                    else:
-                        if return_from_create_Text_Chunk:
-                            print(return_from_create_Text_Chunk)
-                            chunked_lines[line_number].append(
-                            return_from_create_Text_Chunk)
-                        else:
-                            print("all inside")
+    if first_line == 0 and last_line == 0:
+        first_line_to_use = 1
+        last_line_to_use = lines_in_file
+    else:
+        first_line_to_use = first_line
+        last_line_to_use = min(last_line, lines_in_file)
 
-            #Group 2 - Vanilla Open Compounds
-            CHUNK_TYPE = "voc"
-            regex_string = maori_regex.sequential_capitalised_words
-            voc_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
-            for voc_match in voc_matches:
-                print(line_number, voc_match)
-                try:
-                    return_from_create_Text_Chunk = \
-                        create_Text_Chunk(chunked_lines[line_number],
-                        voc_match.group(),
-                        voc_match.start(),
-                        voc_match.end(),
-                        CHUNK_TYPE)
-                except NameError:
-                    print("something MAY have gone wrong")
-                else:
-                    if return_from_create_Text_Chunk:
-                        print(return_from_create_Text_Chunk)
-                        chunked_lines[line_number].append(
-                        return_from_create_Text_Chunk)
-                    else:
-                        print("all inside")
+    for x in range(first_line_to_use, last_line_to_use + 1):
+        lines_to_check.append((x, text_file_to_check[x]))
 
-            #Group 3 - Mixed Open Compounds
-            CHUNK_TYPE = "moc"
-            regex_string = maori_regex.mixed_open_compound
-            moc_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
-            for moc_match in moc_matches:
-                print(line_number, moc_match)
-                try:
-                    return_from_create_Text_Chunk = \
-                        create_Text_Chunk(chunked_lines[line_number],
-                        moc_match.group(),
-                        moc_match.start(),
-                        moc_match.end(),
-                        CHUNK_TYPE)
-                except NameError:
-                    print("something MAY have gone wrong")
-                else:
-                    if return_from_create_Text_Chunk:
-                        print(return_from_create_Text_Chunk)
-                        chunked_lines[line_number].append(
-                        return_from_create_Text_Chunk)
-                    else:
-                        print("all inside")
-
-            #Group 4 - Isolated Capitalised Non-Compound Word
-            # The regex will find all Capitalised Non-Compound Words
-            # but if they are contained in Compound Words previously found
-            # they will be rejected (classed as "all inside")
-            # resulting in isolated.
-            CHUNK_TYPE = "icncw"
-            regex_string = maori_regex.capitalised_non_compound_word
-            icncw_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
-            for icncw_match in icncw_matches:
-                print(line_number, icncw_match)
-                try:
-                    return_from_create_Text_Chunk = \
-                        create_Text_Chunk(chunked_lines[line_number],
-                        icncw_match.group(),
-                        icncw_match.start(),
-                        icncw_match.end(),
-                        CHUNK_TYPE)
-                except NameError:
-                    print("something MAY have gone wrong")
-                else:
-                    if return_from_create_Text_Chunk:
-                        print(return_from_create_Text_Chunk)
-                        chunked_lines[line_number].append(
-                        return_from_create_Text_Chunk)
-                    else:
-                        print("all inside")
-
-
-            #Group 5 - Isolated Closed-Compound Words
-            # The regex will find all Closed-Compound Words
-            # but if they are contained in Mixed Open Compound Words previously found
-            # they will be rejected (classed as "all inside")
-            # resulting in isolated.
-            CHUNK_TYPE = "iccw"
-            regex_string = maori_regex.isolated_closed_compound_word
-            iccw_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
-            for iccw_match in iccw_matches:
-                print(line_number, iccw_match)
-                try:
-                    return_from_create_Text_Chunk = \
-                        create_Text_Chunk(chunked_lines[line_number],
-                        iccw_match.group(),
-                        iccw_match.start(),
-                        iccw_match.end(),
-                        CHUNK_TYPE)
-                except NameError:
-                    print("something MAY have gone wrong")
-                else:
-                    if return_from_create_Text_Chunk:
-                        print(return_from_create_Text_Chunk)
-                        chunked_lines[line_number].append(
-                        return_from_create_Text_Chunk)
-                    else:
-                        print("all inside")
+    for line_number, line in lines_to_check:
         
-                                          
-                                         
-            #Group 6 - Isolated Lower Case Non-Compound Word
-            # The regex will find all Lower Case Non-Compound Words
-            # but if they are contained in Compound Words previously found
-            # they will be rejected (classed as "all inside")
-            # resulting in isolated.
-            CHUNK_TYPE = "ilcncw"
-            regex_string = maori_regex.lower_case_non_compound_word
-            ilcncw_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
-            for ilcncw_match in ilcncw_matches:
-                print(line_number, ilcncw_match)
-                try:
-                    return_from_create_Text_Chunk = \
-                        create_Text_Chunk(chunked_lines[line_number],
-                        ilcncw_match.group(),
-                        ilcncw_match.start(),
-                        ilcncw_match.end(),
-                        CHUNK_TYPE)
-                except NameError:
-                    print("something MAY have gone wrong")
-                else:
-                    if return_from_create_Text_Chunk:
-                        print(return_from_create_Text_Chunk)
-                        chunked_lines[line_number].append(
-                        return_from_create_Text_Chunk)
-                    else:
-                        print("all inside")      
+        line_to_chunk = decapitalise(line)
+        
+        #initialise dictionary value
+        chunked_lines[line_number] = []
 
-            #Group 7 - Punctuation and Whitepace
-            CHUNK_TYPE = "paws"
-            paws_matches = re.finditer(r'\W+', line_to_chunk)
-            for paws_match in paws_matches:
-                print(line_number, paws_match)
+        #Group 1 - Open Compounds
+        CHUNK_TYPE = "oc"
+        for oc in ocs:
+            regex_string = maori_regex.get_oc_regex(oc)
+            oc_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
+            for oc_match in oc_matches:
+                print(line_number, oc_match)
                 try:
                     return_from_create_Text_Chunk = \
                         create_Text_Chunk(chunked_lines[line_number],
-                        paws_match.group(),
-                        paws_match.start(),
-                        paws_match.end(),
+                        oc_match.group(),
+                        oc_match.start(),
+                        oc_match.end(),
                         CHUNK_TYPE)
                 except NameError:
                     print("something has gone wrong")
@@ -419,32 +290,198 @@ def process_text_file(file_id):
                         chunked_lines[line_number].append(
                         return_from_create_Text_Chunk)
                     else:
-                        print("all inside")   
+                        print("all inside")
 
-            '''   
-
-            #Group 8 - Everything Else
-            CHUNK_TYPE = "misc"
-            regex_string = maori_regex.misc
-            misc_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
-            for misc_match in misc_matches:
-                print(line_number, misc_match)
-                try:
-                    return_from_create_Text_Chunk = \
-                        create_Text_Chunk(chunked_lines[line_number],
-                        misc_match.group(),
-                        misc_match.start(),
-                        misc_match.end(),
-                        CHUNK_TYPE)
-                except NameError:
-                    print("something HAS gone wrong")
+        #Group 2 - Vanilla Open Compounds
+        CHUNK_TYPE = "voc"
+        regex_string = maori_regex.sequential_capitalised_words
+        voc_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
+        for voc_match in voc_matches:
+            print(line_number, voc_match)
+            try:
+                return_from_create_Text_Chunk = \
+                    create_Text_Chunk(chunked_lines[line_number],
+                    voc_match.group(),
+                    voc_match.start(),
+                    voc_match.end(),
+                    CHUNK_TYPE)
+            except NameError:
+                print("something MAY have gone wrong")
+            else:
+                if return_from_create_Text_Chunk:
+                    print(return_from_create_Text_Chunk)
+                    chunked_lines[line_number].append(
+                    return_from_create_Text_Chunk)
                 else:
-                    if return_from_create_Text_Chunk:
-                        # print(return_from_create_Text_Chunk)
-                        chunked_lines[line_number].append(
-                        return_from_create_Text_Chunk)
-                    else:
-                        print("all inside")      
+                    print("all inside")
+
+        #Group 3 - Mixed Open Compounds
+        CHUNK_TYPE = "moc"
+        regex_string = maori_regex.mixed_open_compound
+        moc_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
+        for moc_match in moc_matches:
+            print(line_number, moc_match)
+            try:
+                return_from_create_Text_Chunk = \
+                    create_Text_Chunk(chunked_lines[line_number],
+                    moc_match.group(),
+                    moc_match.start(),
+                    moc_match.end(),
+                    CHUNK_TYPE)
+            except NameError:
+                print("something MAY have gone wrong")
+            else:
+                if return_from_create_Text_Chunk:
+                    print(return_from_create_Text_Chunk)
+                    chunked_lines[line_number].append(
+                    return_from_create_Text_Chunk)
+                else:
+                    print("all inside")
+
+        #Group 4 - Isolated Capitalised Non-Compound Word
+        # The regex will find all Capitalised Non-Compound Words
+        # but if they are contained in Compound Words previously found
+        # they will be rejected (classed as "all inside")
+        # resulting in isolated.
+        CHUNK_TYPE = "icncw"
+        regex_string = maori_regex.capitalised_non_compound_word
+        icncw_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
+        for icncw_match in icncw_matches:
+            print(line_number, icncw_match)
+            try:
+                return_from_create_Text_Chunk = \
+                    create_Text_Chunk(chunked_lines[line_number],
+                    icncw_match.group(),
+                    icncw_match.start(),
+                    icncw_match.end(),
+                    CHUNK_TYPE)
+            except NameError:
+                print("something MAY have gone wrong")
+            else:
+                if return_from_create_Text_Chunk:
+                    print(return_from_create_Text_Chunk)
+                    chunked_lines[line_number].append(
+                    return_from_create_Text_Chunk)
+                else:
+                    print("all inside")
+
+
+        #Group 5 - Isolated Closed-Compound Words
+        # The regex will find all Closed-Compound Words
+        # but if they are contained in Mixed Open Compound Words previously found
+        # they will be rejected (classed as "all inside")
+        # resulting in isolated.
+        CHUNK_TYPE = "iccw"
+        regex_string = maori_regex.isolated_closed_compound_word
+        iccw_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
+        for iccw_match in iccw_matches:
+            print(line_number, iccw_match)
+            try:
+                return_from_create_Text_Chunk = \
+                    create_Text_Chunk(chunked_lines[line_number],
+                    iccw_match.group(),
+                    iccw_match.start(),
+                    iccw_match.end(),
+                    CHUNK_TYPE)
+            except NameError:
+                print("something MAY have gone wrong")
+            else:
+                if return_from_create_Text_Chunk:
+                    print(return_from_create_Text_Chunk)
+                    chunked_lines[line_number].append(
+                    return_from_create_Text_Chunk)
+                else:
+                    print("all inside")
+    
+                                      
+                                     
+        #Group 6 - Isolated Lower Case Non-Compound Word
+        # The regex will find all Lower Case Non-Compound Words
+        # but if they are contained in Compound Words previously found
+        # they will be rejected (classed as "all inside")
+        # resulting in isolated.
+        CHUNK_TYPE = "ilcncw"
+        regex_string = maori_regex.lower_case_non_compound_word
+        ilcncw_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
+        for ilcncw_match in ilcncw_matches:
+            print(line_number, ilcncw_match)
+            try:
+                return_from_create_Text_Chunk = \
+                    create_Text_Chunk(chunked_lines[line_number],
+                    ilcncw_match.group(),
+                    ilcncw_match.start(),
+                    ilcncw_match.end(),
+                    CHUNK_TYPE)
+            except NameError:
+                print("something MAY have gone wrong")
+            else:
+                if return_from_create_Text_Chunk:
+                    print(return_from_create_Text_Chunk)
+                    chunked_lines[line_number].append(
+                    return_from_create_Text_Chunk)
+                else:
+                    print("all inside")      
+
+        #Group 7 - Punctuation and Whitepace
+        CHUNK_TYPE = "paws"
+        paws_matches = re.finditer(r'\W+', line_to_chunk)
+        for paws_match in paws_matches:
+            print(line_number, paws_match)
+            try:
+                return_from_create_Text_Chunk = \
+                    create_Text_Chunk(chunked_lines[line_number],
+                    paws_match.group(),
+                    paws_match.start(),
+                    paws_match.end(),
+                    CHUNK_TYPE)
+            except NameError:
+                print("something has gone wrong")
+            else:
+                if return_from_create_Text_Chunk:
+                    print(return_from_create_Text_Chunk)
+                    chunked_lines[line_number].append(
+                    return_from_create_Text_Chunk)
+                else:
+                    print("all inside")      
+
+        #Group 8 - Everything Else
+        CHUNK_TYPE = "misc"
+        regex_string = maori_regex.misc
+        misc_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
+        for misc_match in misc_matches:
+            print(line_number, misc_match)
+            try:
+                return_from_create_Text_Chunk = \
+                    create_Text_Chunk(chunked_lines[line_number],
+                    misc_match.group(),
+                    misc_match.start(),
+                    misc_match.end(),
+                    CHUNK_TYPE)
+            except NameError:
+                print("something HAS gone wrong")
+            else:
+                if return_from_create_Text_Chunk:
+                    print(return_from_create_Text_Chunk)
+                    chunked_lines[line_number].append(
+                    return_from_create_Text_Chunk)
+                else:
+                    print("all inside") 
+                    print("something HAS gone wrong") 
+
+    from operator import itemgetter
+    for k, v in chunked_lines.items():
+        sorted_chunks = sorted(v,key=itemgetter(1))
+        recreated_line = ''
+        for chunk in sorted_chunks:
+            recreated_line = recreated_line + chunk.text_chunk
+        if text_file_to_check[k].lower() == recreated_line.lower():
+            print('good')
+            pass
+        else:
+            print('ERROR')
+            print(text_file_to_check[k])
+            print(recreated_line)
+           
 
 
 if __name__ == '__main__':
@@ -458,8 +495,10 @@ if __name__ == '__main__':
     subparsers = parser.add_subparsers()
 
     # create the parser for the get_all_entries function
-    process_text_file_parser = subparsers.add_parser('process_text_file', help = '>>>>>> No arguments')
+    process_text_file_parser = subparsers.add_parser('process_text_file')
     process_text_file_parser.add_argument('file_id', choices = ['hpk_tauira',])
+    process_text_file_parser.add_argument('first_line')
+    process_text_file_parser.add_argument('last_line')
     process_text_file_parser.set_defaults(function = process_text_file)
 
     # parse the arguments
