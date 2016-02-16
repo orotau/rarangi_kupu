@@ -105,16 +105,16 @@ def decapitalise(text_chunk):
     if is_any_match:
         cncc_words = re.finditer(regex_string, text_chunk, re.VERBOSE)
         for each_match in cncc_words:
-            if each_match.group() not in excluded_words:
+            if each_match.group(1) not in excluded_words:
                 # print(each_match.group())
-                if each_match.start() == 0:
+                if each_match.start(1) == 0:
                     # first word in text_chunk
                     text_chunk_to_return[0] = text_chunk[0].lower()
                 else:
                     # not the first word in text chunk
                     # check to the left
                     text_chunk_to_left = (''.join(text_chunk_to_return)
-                                                 [0:each_match.start()])
+                                                 [0:each_match.start(1)])
 
                     # print("text to left", text_chunk_to_left)
 
@@ -137,9 +137,9 @@ def decapitalise(text_chunk):
                             # check the last sentence boundary and see if it is
                             # just before the capitalised non closed compound word
 
-                            if last_sentence_boundary.end() == each_match.start():
-                                text_chunk_to_return[each_match.start()] = \
-                                text_chunk[each_match.start()].lower()
+                            if last_sentence_boundary.end() == each_match.start(1):
+                                text_chunk_to_return[each_match.start(1)] = \
+                                text_chunk[each_match.start(1)].lower()
                                 break
                             else:
                                 #there is no sentence boundary immediately
@@ -217,6 +217,7 @@ def create_Text_Chunk(existing_Text_Chunks, text_chunk, chunk_start, chunk_end, 
 
     else:
         # there is overlap
+        print("hello")
         raise NameError('Overlap Found')
     
 
@@ -274,15 +275,15 @@ def process_text_file(file_id, first_line, last_line):
         CHUNK_TYPE = "oc"
         for oc in ocs:
             regex_string = maori_regex.get_oc_regex(oc)
-            oc_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
+            oc_matches = re.finditer(regex_string, line_to_chunk)
             for oc_match in oc_matches:
                 print(line_number, oc_match)
                 try:
                     return_from_create_Text_Chunk = \
                         create_Text_Chunk(chunked_lines[line_number],
-                        oc_match.group(),
-                        oc_match.start(),
-                        oc_match.end(),
+                        oc_match.group(1),
+                        oc_match.start(1),
+                        oc_match.end(1),
                         CHUNK_TYPE)
                 except NameError:
                     print("something has gone wrong")
@@ -298,16 +299,15 @@ def process_text_file(file_id, first_line, last_line):
         for chunk_type, regex_string in maori_regex.static_regexes:
             chunk_matches = re.finditer(regex_string, line_to_chunk, re.VERBOSE)
             for chunk_match in chunk_matches:
-                print(line_number, chunk_match)
                 try:
                     return_from_create_Text_Chunk = \
                         create_Text_Chunk(chunked_lines[line_number],
-                        chunk_match.group(),
-                        chunk_match.start(),
-                        chunk_match.end(),
+                        chunk_match.group(1),
+                        chunk_match.start(1),
+                        chunk_match.end(1),
                         chunk_type)
                 except NameError:
-                    if chunk_type = "misc":
+                    if chunk_type.startswith("misc"):
                         # this is what is left over so if it
                         # overlaps with anything else we have
                         # made a mistake
@@ -320,6 +320,10 @@ def process_text_file(file_id, first_line, last_line):
                         chunked_lines[line_number].append(
                         return_from_create_Text_Chunk)
                     else:
+                        print(chunk_match.group(1),
+                        chunk_match.start(1),
+                        chunk_match.end(1),
+                        chunk_type)
                         print("all inside")
 
 
@@ -331,7 +335,7 @@ def process_text_file(file_id, first_line, last_line):
         for chunk in sorted_chunks:
             recreated_line = recreated_line + chunk.text_chunk
         if text_file_to_check[k].lower() == recreated_line.lower():
-            print('OK')
+            pass
         else:
             print('ERROR')
             print(text_file_to_check[k])

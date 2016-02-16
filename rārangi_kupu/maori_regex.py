@@ -13,19 +13,9 @@ def get_oc_regex(open_compound):
     Ensures that we don't consume part of a closed compound
     '''
 
-    oc_regex_start = r"""
-    (?<!
-    -                   # Don't select part of a closed compound
-    )
-    """
-
+    oc_regex_start = "((?<!-)"      # 1 capturing group
     oc_regex_middle = r"\b" + open_compound + r"\b"
-
-    oc_regex_end = r"""
-    (?!
--                       # Don't select part of a closed compound
-    )
-    """
+    oc_regex_end = "(?!-))"
 
     return oc_regex_start + oc_regex_middle + oc_regex_end
 
@@ -35,6 +25,7 @@ static_regexes = []
 #Group 2 - Vanilla Open Compounds
 ##################################################################
 static_regexes.insert(0, ("voc", r"""
+(                       # capturing group 1 of 1
 (?:
 [A-ZĀĒĪŌŪ]              # capital letter to start
 [a-zāēīōū]+             # one or more alphanumeric characters
@@ -53,6 +44,7 @@ static_regexes.insert(0, ("voc", r"""
 -                       # Don't bump into a closed compound
 )
 
+)                       # End of capturing group 1 of 1
 """
 ))
 
@@ -61,6 +53,7 @@ static_regexes.insert(0, ("voc", r"""
 ##################################################################
 static_regexes.insert(1, ("moc", r"""
 # first - capitalised non-closed-compound word
+(                       # capturing group 1 of 1
 (?:
 \b
 [A-ZĀĒĪŌŪ]              # capital letter to start
@@ -83,6 +76,7 @@ static_regexes.insert(1, ("moc", r"""
 )+                      # one or more times
 
 )
+)                       # End of Capturing Group 1 of 1
 """
 ))
 
@@ -94,7 +88,7 @@ static_regexes.insert(1, ("moc", r"""
 # resulting in isolated.
 ##################################################################
 static_regexes.insert(2, ("icncw", r"""
-
+(                       # capturing group 1 of 1
 (?<!
 -                       # Don't select part of a closed compound
 )
@@ -109,6 +103,7 @@ static_regexes.insert(2, ("icncw", r"""
 (?!
 -                       # Don't select part of a closed compound
 )
+)                       # End of capturing group 1 of 1
 """
 ))
 
@@ -120,7 +115,7 @@ static_regexes.insert(2, ("icncw", r"""
 # resulting in isolated.
 ##################################################################
 static_regexes.insert(3, ("iccw", r"""
-
+(                       # capturing group 1 of 1
 (?:    
 
 (?:
@@ -133,6 +128,7 @@ static_regexes.insert(3, ("iccw", r"""
 )+                      # one or more times
 
 )
+)                       # End of capturing group 1 of 1
 """
 ))
 
@@ -144,6 +140,7 @@ static_regexes.insert(3, ("iccw", r"""
 # resulting in isolated.
 ##################################################################
 static_regexes.insert(4, ("ilcncw", r"""
+(                       # capturing group 1 of 1
 (?<!
 -                       # Don't select part of a closed compound
 )
@@ -157,26 +154,72 @@ static_regexes.insert(4, ("ilcncw", r"""
 (?!
 -                       # Don't select part of a closed compound
 )
+)                       # End of capturing group 1 of 1
 """
 ))
 
 ##################################################################
-# Group 7 - Punctuation and Whitespace
+# Group 7a - Misc - Numbers
 ##################################################################
-static_regexes.insert(5, ("paws", r"""
+static_regexes.insert(5, ("misc_number", r"""
+(                       # capturing group 1 of 1
 (?:
+[0-9]+
+[¼½¾]?
+|
+[¼½¾]
+)
+)                       # End of capturing group 1 of 1
+"""
+))
+
+##################################################################
+# Group 7b - Misc - Prefixes
+##################################################################
+static_regexes.insert(6, ("misc_prefix", r"""
+(                       # capturing group 1 of 1
+[A-Za-zĀĒĪŌŪāēīōū]+
+)                       # End of capturing group 1 of 1
+-                       # dash
+(?!
+[A-Za-zĀĒĪŌŪāēīōū]      # Not if part of a closed compound
+)
+"""
+))
+
+##################################################################
+# Group 7c - Misc - Suffixes
+##################################################################
+static_regexes.insert(7, ("misc_suffix", r"""
+(?<!
+[A-Za-zĀĒĪŌŪāēīōū]      # Don't select part of a closed compound
+)
+-                       # dash
+(                       # capturing group 1 of 1
+[A-Za-zĀĒĪŌŪāēīōū]+
+)                       # End of capturing group 1 of 1
+"""
+))
+
+##################################################################
+# Group 7d - Misc - Two or More capital letter words
+##################################################################
+static_regexes.insert(8, ("misc_all_caps", r"""
+(                       # capturing group 1 of 1
+\b
+[A-ZĀĒĪŌŪ]{2,}
+\b
+)                       # End of capturing group 1 of 1
+"""
+))
+
+##################################################################
+# Group 8 - Punctuation and Whitespace
+##################################################################
+static_regexes.insert(9, ("paws", r"""
+(                       # capturing group 1 of 1
 \W+
-)
-"""
-))
-
-##################################################################
-# Group 8 - Everything Else
-##################################################################
-static_regexes.insert(6, ("misc", r"""
-(?:
-[^A-Za-zĀĒĪŌŪāēīōū\W]+
-)
+)                       # End of capturing group 1 of 1
 """
 ))
 
@@ -184,7 +227,6 @@ static_regexes.insert(6, ("misc", r"""
 sentence_boundaries = []
 
 sentence_boundaries.insert(0, r"""
-
 
 (?:
 \A                      # Start of text chunk only
