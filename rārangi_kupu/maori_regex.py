@@ -159,16 +159,16 @@ static_regexes.insert(4, ("ilcncw", r"""
 ))
 
 ##################################################################
-# Group 7a - Misc - Numbers
+# Group 7a - Misc - Numbers + Units + things like R18 and 7a
 ##################################################################
 static_regexes.insert(5, ("misc_number", r"""
 (                       # capturing group 1 of 1
-(?:
+[A-Za-z]?
 [0-9]+
+[A-Za-z]?
 [¼½¾]?
 |
 [¼½¾]
-)
 )                       # End of capturing group 1 of 1
 """
 ))

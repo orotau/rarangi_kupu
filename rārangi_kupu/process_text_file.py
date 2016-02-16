@@ -265,6 +265,7 @@ def process_text_file(file_id, first_line, last_line):
 
 
     for line_number, line in lines_to_check:
+        print("=============== " + str(line_number) + " ==============")
         
         line_to_chunk = decapitalise(line)
         
@@ -340,6 +341,10 @@ def process_text_file(file_id, first_line, last_line):
             print('ERROR')
             print(text_file_to_check[k])
             print(recreated_line)
+
+    import pickle
+
+    pickle.dump( chunked_lines, open( "chunked_lines.p", "wb" ) )
            
 
 
