@@ -233,6 +233,7 @@ def process_text_file(file_id, first_line, last_line):
         sys.exit()
 
     TEXT_EXTENSION = "txt"
+    PICKLE_EXTENSION = "p"
 
     cf = config.ConfigFile()
     text_files_path = (cf.configfile[cf.computername]['text_files_path'])
@@ -343,8 +344,10 @@ def process_text_file(file_id, first_line, last_line):
             print(recreated_line)
 
     import pickle
+    pickle_files_path = (cf.configfile[cf.computername]['pickle_files_path'])
+    pickle_file_path = pickle_files_path + file_id + os.extsep + PICKLE_EXTENSION
 
-    pickle.dump( chunked_lines, open( "chunked_lines.p", "wb" ) )
+    pickle.dump( chunked_lines, open( pickle_file_path, "wb" ) )
            
 
 

@@ -32,22 +32,27 @@ class MaoriWord():
 
             # check the part has no leading and/or trailing whitespace
             if part.strip() != part:
+                print(1, part, word)
                 raise ValueError
 
             # check the part is not the empty string
             if part.strip() == '':
+                print(2, part, word)
                 raise ValueError
 
             # check that part has all legal letters
             if not _isalllegalletters(part):
+                print(3, part, word)
                 raise ValueError
 
             # check part ends in a vowel
             if not _endsinvowel(part):
+                print(4, part, word)
                 raise ValueError
 
             # check part is consonant vowel
             if not _isconsonantvowel(part):
+                print(5, part, word)
                 raise ValueError
 
         self.word = word

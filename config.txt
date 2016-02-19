@@ -33,3 +33,5 @@ dump_path = /home/graham/PythonProjects/rārangi_kupu/web_dumps_html/
 json_path = /home/graham/PythonProjects/rārangi_kupu/word_trees/
 iwa_path = /home/graham/PythonProjects/rārangi_kupu/iwa/
 text_files_path = /home/graham/PythonProjects/rārangi_kupu/text_files/
+pickle_files_path = /home/graham/PythonProjects/rārangi_kupu/pickle_files/
+misc_files_path = /home/graham/PythonProjects/rārangi_kupu/misc/
