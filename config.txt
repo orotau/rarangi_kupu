@@ -31,7 +31,11 @@ ua = Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) 
 #that only differ by case.
 dump_path = /home/graham/PythonProjects/rārangi_kupu/web_dumps_html/
 json_path = /home/graham/PythonProjects/rārangi_kupu/word_trees/
-iwa_path = /home/graham/PythonProjects/rārangi_kupu/iwa/
+iwa_path = /home/graham/PythonProjects/webfaction_home/webapps/pk_cp/iwa/
 text_files_path = /home/graham/PythonProjects/rārangi_kupu/text_files/
 pickle_files_path = /home/graham/PythonProjects/rārangi_kupu/pickle_files/
 misc_files_path = /home/graham/PythonProjects/rārangi_kupu/misc/
+
+database = whero
+user = kereama
+id = test_database_password
