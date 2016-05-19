@@ -45,6 +45,7 @@ def get_word_frequency_distribution():
             words = [x[0] for x in word_frequency_pairs]
 
     scores = {}
+    burp = 0
     for k, v in boards_and_children.boards_and_children.items():
         child_word_frequencies = []
         for child_word in v:
@@ -62,8 +63,8 @@ def get_word_frequency_distribution():
         scores[k] = sorted(child_word_frequencies)
 
         intervals = [frozenset(range(24, 100000)), \
-                     frozenset(range(6, 24)), \
-                     frozenset(range(6))]
+                     frozenset(range(4, 24)), \
+                     frozenset(range(4))]
         counts = [0] * len(intervals)
 
         for n in sorted(child_word_frequencies):
@@ -71,9 +72,9 @@ def get_word_frequency_distribution():
             if n in inter:
               counts[i] += 1
 
-        if not(counts[0] <= 5 or sum(counts) < 10):
-            if counts[2] >= 4:
-                print(k, counts[0], counts[0] + counts[1], sum(counts))
+        if not(counts[0] < 4 or counts[1] < 4 or counts[2] < 4):
+                burp = burp +1
+                print(k, burp, counts[0], counts[1], counts[2])
         
 
     

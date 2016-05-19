@@ -217,6 +217,7 @@ if __name__ == '__main__':
     import ast
     import config  
     from collections import Counter  
+    import maoriword as mw
 
     # create the top-level parser
     parser = argparse.ArgumentParser()
@@ -291,41 +292,48 @@ if __name__ == '__main__':
     print (len(result))
     print (type(result))
     #pprint.pprint(result)
+    '''
     if isinstance(result, list):
         pprint.pprint(result)
+        print(len(result))
     elif isinstance(result, dict):
-        '''
-        tauira = {k:v for k,v in result.items() if v["tauira"]}
-        for k, v in tauira.items():
-            for t in v["tauira"]:
-                if "\n" in t:
-                    print(t.count("\n"))
-                    print(k)
-                    print(t)
-                    print("----------------------")
+        passives = {k:v for k,v in result.items() if v["pīmuri_whakahāngū"]}
+        irregulars = []
+        for k, v in passives.items():
+            for p in v["pīmuri_whakahāngū"]:
+                if not p.startswith(chr(8209)) and not p == "" \
+                   and not p == "tia" and not p == "hia":
+                    irregulars.append((k.trunk, p))
+        irregulars = list(set(irregulars)) # remove repeats
+        irregulars = [x[0] + " " + x[1] for x in irregulars] # hack to allow sorting
+        irregulars = sorted(irregulars, key=mw.get_list_sort_key)
+        pprint.pprint(irregulars)
+    '''
+
         #with open("test.txt", "a") as myfile:
         #    for k, v in tauira.items():
         #       for t in v["tauira"]:
         #            myfile.write(t + "\n")
-        '''
 
-        print ('ese not ok', len(result['ese'].not_ok))
-        c = Counter(len(x) for x in result['ese'].not_ok)
-        c = dict(c)
-        for k in sorted(c.keys()):
-            print(k, c[k])
-        for x in result['ese'].not_ok:
-            print(x)
-        '''
-        cf = config.ConfigFile()
-        iwa_path = (cf.configfile[cf.computername]['iwa_path'])
-        iwa_filename = "all_words_for_iwa.json"
-        full_iwa_path = iwa_path + iwa_filename
-        with open(full_iwa_path, 'w') as f:
-            json.dump(result['ese'].ok, f)
-        '''
+    '''
+    print ('ese not ok', len(result['ese'].not_ok))
+    c = Counter(len(x) for x in result['ese'].not_ok)
+    c = dict(c)
+    for k in sorted(c.keys()):
+        print(k, c[k])
+    for x in result['ese'].not_ok:
+        print(x)
+    '''
+    '''
+    cf = config.ConfigFile()
+    iwa_path = (cf.configfile[cf.computername]['iwa_path'])
+    iwa_filename = "all_words_for_iwa.json"
+    full_iwa_path = iwa_path + iwa_filename
+    with open(full_iwa_path, 'w') as f:
+        json.dump(result['ese'].ok, f)
+
     else:
         print (type(result), 'surprise!')
-
+    '''
 
 
