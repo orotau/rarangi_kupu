@@ -4,6 +4,7 @@ The module to help create the dic and aff files for hunspell
 
 import pataka
 import pprint
+import itertools
 
 def get_all_suffixes():
     '''
@@ -47,16 +48,16 @@ def get_all_suffixes():
                 # the key is in BOTH dictionaries
                 all_suffixes[key] = nominalisations[key]["pīmuri_whakaingoa"] + \
                                     passives[key]["pīmuri_whakahāngū"]
-
+    print (all_suffixes)
     return all_suffixes
 
 
 def get_distinct_suffixes (word_form = "all"):
     '''
     The purpose of get_distinct_suffixes
-    is to get the distinct suffixes for the word passed
+    is to get the distinct suffixes for the word_form passed
 
-    If no word is passed then all 'word forms' with suffixes
+    If no word_form is passed then all 'word forms' with suffixes
     will be found
 
     Empty suffixes (an error in the data) will be excluded
@@ -65,22 +66,78 @@ def get_distinct_suffixes (word_form = "all"):
 
     A Sample key : value pair
 
-    'paraparau' : ['‑tanga', '‑ngia', '‑hia', '‑tia']
+    'paraparau' : {'‑tanga', '‑ngia', '‑hia', '‑tia'}
 
-    The list will be unsorted
+    The code ASSUMES (correct as at May 2016) that there are no 'twigs'
     '''
 
     distinct_suffixes = {}
     all_suffixes = get_all_suffixes()
+    all_suffixes_copy = all_suffixes # hack, see below
 
-    if word_form = "all":
-        
+    if word_form != "all":
+        # get all the possible suffixes for the word_form passed
+        word_form_suffixes = {k : v for k, v in all_suffixes.items() if k.trunk == word_form}
+        print(word_form_suffixes)
+
+        # list of lists of all possible suffixes
+        all_possible_suffixes = word_form_suffixes.values()
+
+        # flatten list of lists to get a list
+        all_suffixes = itertools.chain.from_iterable(all_possible_suffixes)
+
+        #remove any '' suffixes
+        all_suffixes = [x for x in all_suffixes if x]
+
+        # create dictionary entry of set of suffixes to return
+        distinct_suffixes[word_form] = set(all_suffixes)
+
+    else:
+        for k, v in all_suffixes.items():
+            # not proud of this code but it seems to work!
+            word_form = k.trunk
+            if word_form not in distinct_suffixes:
+                # get all keys that share the same word_form
+                word_form_suffixes = {k : v for k, v in all_suffixes_copy.items() if k.trunk == word_form}
+
+                # list of lists of all possible suffixes for the word_form
+                all_possible_suffixes = word_form_suffixes.values()
+
+                # flatten list of lists to get a list
+                all_suffixes = itertools.chain.from_iterable(all_possible_suffixes)
+
+                #remove any '' suffixes
+                all_suffixes = [x for x in all_suffixes if x]
+
+                # create dictionary entry of set of suffixes to return
+                distinct_suffixes[word_form] = set(all_suffixes)
+                
+
+    return distinct_suffixes
+
+def get_distinct_suffix_groups():
+    '''
+    get the distinct suffix groups
+    return a list of sets
+    '''
+    distinct_suffixes = get_distinct_suffixes()
+
+    # list of sets
+    distinct_suffix_groups = list(distinct_suffixes.values())
+
+    # list of sorted tuples
+    distinct_suffix_groups = [tuple(sorted(list(x))) for x in distinct_suffix_groups]
+
+    # distict suffix groups    
+    return set(distinct_suffix_groups)
+
 
 if __name__ == '__main__':
 
     import argparse
     import sys
     import ast
+    import pprint
 
     # create the top-level parser
     parser = argparse.ArgumentParser()
@@ -89,6 +146,15 @@ if __name__ == '__main__':
     # create the parser for the get_all_entries function
     get_all_entries_parser = subparsers.add_parser('get_all_suffixes')
     get_all_entries_parser.set_defaults(function = get_all_suffixes)
+
+    # create the parser for the get_distinct_suffixes function
+    get_distinct_suffixes_parser = subparsers.add_parser('get_distinct_suffixes')
+    get_distinct_suffixes_parser.add_argument('-word_form')
+    get_distinct_suffixes_parser.set_defaults(function = get_distinct_suffixes)
+
+    # create the parser for the get_distinct_suffix_groups function
+    get_distinct_suffix_groups_parser = subparsers.add_parser('get_distinct_suffix_groups')
+    get_distinct_suffix_groups_parser.set_defaults(function = get_distinct_suffix_groups)
 
     # parse the arguments
     arguments = parser.parse_args()
@@ -117,3 +183,6 @@ if __name__ == '__main__':
                                               for k,v in arguments.items() }       
 
     result = function_to_call(**arguments) #note **arguments works fine for empty dict {}
+
+    pprint.pprint(result)
+    print(len(result))

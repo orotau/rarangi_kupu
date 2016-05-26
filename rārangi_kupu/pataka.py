@@ -291,7 +291,7 @@ if __name__ == '__main__':
    
     print (len(result))
     print (type(result))
-    #pprint.pprint(result)
+    pprint.pprint(result)
     '''
     if isinstance(result, list):
         pprint.pprint(result)

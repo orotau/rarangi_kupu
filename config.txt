@@ -39,3 +39,11 @@ misc_files_path = /home/graham/PythonProjects/rārangi_kupu/misc/
 database = whero
 user = kereama
 id = test_database_password
+
+[jackie-ubuntu]
+dump_path = /home/jackie/PythonProjects/rarangi_kupu/web_dumps_html/
+json_path = /home/jackie/PythonProjects/rarangi_kupu/word_trees/
+iwa_path = /home/jackie/PythonProjects/webfaction_home/webapps/pk_cp/iwa/
+text_files_path = /home/jackie/PythonProjects/rarangi_kupu/text_files/
+pickle_files_path = /home/jackie/PythonProjects/rarangi_kupu/pickle_files/
+misc_files_path = /home/jackie/PythonProjects/rarangi_kupu/misc/
