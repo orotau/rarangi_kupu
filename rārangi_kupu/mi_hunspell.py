@@ -5,8 +5,10 @@ The module to help create the dic and aff files for hunspell
 import pataka
 import pprint
 import itertools
+import maoriword as mw
 
-def get_all_suffixes():
+
+def get_all_entries_with_suffixes():
     '''
     The purpose of this function is to get every entry
     in HPK that has a suffix.
@@ -24,7 +26,7 @@ def get_all_suffixes():
 
     '''
 
-    all_suffixes = {}  
+    all_entries_with_suffixes = {}  
     passives = pataka.get_passives(False)
     nominalisations = pataka.get_nominalisations(False)
 
@@ -36,23 +38,27 @@ def get_all_suffixes():
         except KeyError:
             # the key is not in the passives dictionary
             # it must be in the nominalisations dictionary
-            all_suffixes[key] = nominalisations[key]["pīmuri_whakaingoa"]
+            all_entries_with_suffixes[key] = nominalisations[key]["pīmuri_whakaingoa"]
         else:
             # the key is in the passives dictionary
             try:
                 nominalisations[key]
             except KeyError:
                 # the key is in ONLY the passives dictionary
-                all_suffixes[key] = passives[key]["pīmuri_whakahāngū"]
+                all_entries_with_suffixes[key] = passives[key]["pīmuri_whakahāngū"]
             else:
                 # the key is in BOTH dictionaries
-                all_suffixes[key] = nominalisations[key]["pīmuri_whakaingoa"] + \
-                                    passives[key]["pīmuri_whakahāngū"]
-    print (all_suffixes)
-    return all_suffixes
+                all_entries_with_suffixes[key] = nominalisations[key]["pīmuri_whakaingoa"] + \
+                                                 passives[key]["pīmuri_whakahāngū"]
+ 
+    # remove any '' suffixes (not sure why there are any but there are!)   
+    all_entries_with_suffixes = \
+    {k: [x for x in v if x] for k, v in all_entries_with_suffixes.items()}     
+
+    return all_entries_with_suffixes
 
 
-def get_distinct_suffixes (word_form = "all"):
+def get_distinct_suffixes_for_word_form (word_form = "all"):
     '''
     The purpose of get_distinct_suffixes
     is to get the distinct suffixes for the word_form passed
@@ -60,76 +66,145 @@ def get_distinct_suffixes (word_form = "all"):
     If no word_form is passed then all 'word forms' with suffixes
     will be found
 
-    Empty suffixes (an error in the data) will be excluded
-
     Return a dictionary with the following form
 
     A Sample key : value pair
 
-    'paraparau' : {'‑tanga', '‑ngia', '‑hia', '‑tia'}
+    'paraparau' : ('‑tanga', '‑ngia', '‑hia', '‑tia')
 
     The code ASSUMES (correct as at May 2016) that there are no 'twigs'
     '''
 
-    distinct_suffixes = {}
-    all_suffixes = get_all_suffixes()
-    all_suffixes_copy = all_suffixes # hack, see below
+    # suffix problems are caused either by
+    # incorrect data (1,2,3 5) or wrong programming assumptions (4)
 
-    if word_form != "all":
-        # get all the possible suffixes for the word_form passed
-        word_form_suffixes = {k : v for k, v in all_suffixes.items() if k.trunk == word_form}
-        print(word_form_suffixes)
+    # the format here is a dictionary with 7 word_forms (key)
+    # and the value (incorrect suffixes, correct suffixes)
+    suffix_problems = {}
+    suffix_problems['wawana'] = \
+    (('tanga', 'wananga', '‑', '‑tanga'), 
+    ('wananga', '‑tanga'))
+    suffix_problems['pēpē'] = \
+    (('pēpētanga', '‑tanga'), 
+    ('‑tanga',))
+    suffix_problems['tangi'] = \
+    (('hanga', 'hia', '‑hanga', '‑hia', '‑nga', '‑tia'), 
+    ('‑hanga', '‑hia', '‑nga', '‑tia'))
+    suffix_problems['tuai kerekere'] = \
+    (('kerekeretanga', 'tuai'),
+    ('tuai kerekeretanga',))
+    suffix_problems['kauoroi'] = \
+    (('hia', '‑hanga', '‑hia', '‑tanga', '‑tia'),
+    ('‑hanga', '‑hia', '‑tanga', '‑tia'))
+    suffix_problems['kohi'] = \
+    (('nga', '‑a', '‑nga'),
+    ('‑a', '‑nga'))
+    suffix_problems['koto'] = \
+    (('nga', '‑hanga', '‑hia', '‑nga', '‑ngia', '‑ranga', '‑ria', '‑tanga', '‑tia'),
+    ('‑hanga', '‑hia', '‑nga', '‑ngia', '‑ranga', '‑ria', '‑tanga', '‑tia'))
+    suffix_problems['kō'] = \
+    (('tia', '‑ia', '‑nga', '‑tanga'),
+    ('‑ia', '‑nga', '‑tanga', '‑tia'))
 
-        # list of lists of all possible suffixes
-        all_possible_suffixes = word_form_suffixes.values()
+    all_entries_with_suffixes = get_all_entries_with_suffixes()
+    all_distinct_word_forms_with_suffixes = {}
 
-        # flatten list of lists to get a list
-        all_suffixes = itertools.chain.from_iterable(all_possible_suffixes)
+    # squash the dictionary so that each distinct word form has 
+    # one and only one entry
+    for k, v in all_entries_with_suffixes.items():
+        all_distinct_word_forms_with_suffixes.setdefault(k.trunk, []).append(v)            
 
-        #remove any '' suffixes
-        all_suffixes = [x for x in all_suffixes if x]
+    # flatten list of lists to one list of suffixes
+    all_distinct_word_forms_with_suffixes = \
+    {k : list(itertools.chain.from_iterable(v)) for k, v in \
+    all_distinct_word_forms_with_suffixes.items()}
 
-        # create dictionary entry of set of suffixes to return
-        distinct_suffixes[word_form] = set(all_suffixes)
+    # make the list of suffixes unique
+    all_distinct_word_forms_with_suffixes = \
+    {k : set(v) for k, v in \
+    all_distinct_word_forms_with_suffixes.items()}
 
+    # convert to a sorted tuple
+    all_distinct_word_forms_with_suffixes = \
+    {k : tuple(sorted(list(v))) for k, v in \
+    all_distinct_word_forms_with_suffixes.items()}
+
+    # sort out suffix problems
+    # check data
+    for k, v in suffix_problems.items():
+        assert all_distinct_word_forms_with_suffixes[k] == v[0]
+        all_distinct_word_forms_with_suffixes[k] = v[1]     
+
+    if word_form == "all":
+        return all_distinct_word_forms_with_suffixes
     else:
-        for k, v in all_suffixes.items():
-            # not proud of this code but it seems to work!
-            word_form = k.trunk
-            if word_form not in distinct_suffixes:
-                # get all keys that share the same word_form
-                word_form_suffixes = {k : v for k, v in all_suffixes_copy.items() if k.trunk == word_form}
-
-                # list of lists of all possible suffixes for the word_form
-                all_possible_suffixes = word_form_suffixes.values()
-
-                # flatten list of lists to get a list
-                all_suffixes = itertools.chain.from_iterable(all_possible_suffixes)
-
-                #remove any '' suffixes
-                all_suffixes = [x for x in all_suffixes if x]
-
-                # create dictionary entry of set of suffixes to return
-                distinct_suffixes[word_form] = set(all_suffixes)
-                
-
-    return distinct_suffixes
+        try:
+            return {word_form : all_distinct_word_forms_with_suffixes[word_form]}
+        except KeyError:
+            return {}
+        
 
 def get_distinct_suffix_groups():
     '''
     get the distinct suffix groups
-    return a list of sets
+    return a list of sorted tuples
     '''
-    distinct_suffixes = get_distinct_suffixes()
+    distinct_suffixes_for_word_form = get_distinct_suffixes_for_word_form()
 
     # list of sets
-    distinct_suffix_groups = list(distinct_suffixes.values())
+    distinct_suffix_groups = list(distinct_suffixes_for_word_form.values())
 
     # list of sorted tuples
     distinct_suffix_groups = [tuple(sorted(list(x))) for x in distinct_suffix_groups]
 
-    # distict suffix groups    
-    return set(distinct_suffix_groups)
+    # distinct suffix groups    
+    return list(set(distinct_suffix_groups))
+
+
+def assign_word_form_to_suffix_group (word_form = "all"):
+    '''
+    The purpose of this function is to take the word_form passed
+    and assign it to the correct suffix group
+    The group being one of the distinct suffix groups.
+
+    If no parameter is passed this will be done for *all* word forms
+    that have at least one suffix
+
+    If the word_form passed has no suffix then {} will be returned
+
+    otherwise a dictionary will be returned
+
+    A Sample key : value pair
+
+    ('‑tanga', '‑ngia', '‑hia', '‑tia') : ['paraparau', ...]
+
+    The value will be sorted as Māori words
+    '''
+
+    suffix_groups_and_word_forms = {}
+    distinct_suffixes_for_word_form = get_distinct_suffixes_for_word_form()
+    for k, v in distinct_suffixes_for_word_form.items():
+        if v not in suffix_groups_and_word_forms:
+            suffix_groups_and_word_forms[v] = [k]
+        else:
+            suffix_groups_and_word_forms[v].append(k)
+
+    # sort the word_forms    
+    suffix_groups_and_word_forms = \
+    {k: sorted(v, key=mw.get_list_sort_key) for k, v in \
+    suffix_groups_and_word_forms.items()}
+
+    return suffix_groups_and_word_forms
+
+def get_distinct_suffixes():
+    '''
+    '''
+    distinct_suffix_groups = get_distinct_suffix_groups()
+    distinct_suffix_groups = [list(x) for x in distinct_suffix_groups]
+    distinct_suffix_groups = itertools.chain.from_iterable(distinct_suffix_groups)
+    distinct_suffixes = sorted(list(set(distinct_suffix_groups)))
+    return distinct_suffixes  
+        
 
 
 if __name__ == '__main__':
@@ -143,18 +218,33 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
-    # create the parser for the get_all_entries function
-    get_all_entries_parser = subparsers.add_parser('get_all_suffixes')
-    get_all_entries_parser.set_defaults(function = get_all_suffixes)
+    # create the parser for the get_all_entries_with_suffixes function
+    get_all_entries_with_suffixes_parser = \
+    subparsers.add_parser('get_all_entries_with_suffixes')
+    get_all_entries_with_suffixes_parser.set_defaults\
+    (function = get_all_entries_with_suffixes)
 
-    # create the parser for the get_distinct_suffixes function
-    get_distinct_suffixes_parser = subparsers.add_parser('get_distinct_suffixes')
-    get_distinct_suffixes_parser.add_argument('-word_form')
-    get_distinct_suffixes_parser.set_defaults(function = get_distinct_suffixes)
+    # create the parser for the get_distinct_suffixes_for_word_form function
+    get_distinct_suffixes_for_word_form_parser = \
+    subparsers.add_parser('get_distinct_suffixes_for_word_form')
+    get_distinct_suffixes_for_word_form_parser.add_argument('-word_form')
+    get_distinct_suffixes_for_word_form_parser.set_defaults\
+    (function = get_distinct_suffixes_for_word_form)
+
+    # create the parser for the assign_word_form_to_suffix_group function
+    assign_word_form_to_suffix_group_parser = \
+    subparsers.add_parser('assign_word_form_to_suffix_group')
+    assign_word_form_to_suffix_group_parser.add_argument('-word_form')
+    assign_word_form_to_suffix_group_parser.set_defaults\
+    (function = assign_word_form_to_suffix_group)
 
     # create the parser for the get_distinct_suffix_groups function
     get_distinct_suffix_groups_parser = subparsers.add_parser('get_distinct_suffix_groups')
     get_distinct_suffix_groups_parser.set_defaults(function = get_distinct_suffix_groups)
+
+    # create the parser for the get_distinct_suffixes function
+    get_distinct_suffixes_parser = subparsers.add_parser('get_distinct_suffixes')
+    get_distinct_suffixes_parser.set_defaults(function = get_distinct_suffixes)
 
     # parse the arguments
     arguments = parser.parse_args()
@@ -185,4 +275,11 @@ if __name__ == '__main__':
     result = function_to_call(**arguments) #note **arguments works fine for empty dict {}
 
     pprint.pprint(result)
+    '''
+    for k, v in result.items():
+        if all(x.startswith(chr(8209)) for x in k):
+            pass
+        else:
+            print(k, v)
+    '''
     print(len(result))
