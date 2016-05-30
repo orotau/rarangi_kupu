@@ -6,6 +6,7 @@ import pataka
 import pprint
 import itertools
 import maoriword as mw
+import suffix_problems as sp
 
 
 def get_all_entries_with_suffixes():
@@ -22,8 +23,11 @@ def get_all_entries_with_suffixes():
     a sample key : value pair
 
     Word_ID(root_number=1, trunk='paraparau', branch_number=2, twig=False, 
-    twig_number=0): ['‑tanga', '‑ngia', '‑hia', '‑tia']
+    twig_number=0): ['-tanga', '-ngia', '-hia', '-tia']
 
+    Note that this function also replaces all chr(8209) hyphen characters
+    that are used in the original data 
+    with the standard hyphen chr(45) (they are visually equivalent)
     '''
 
     all_entries_with_suffixes = {}  
@@ -55,6 +59,11 @@ def get_all_entries_with_suffixes():
     all_entries_with_suffixes = \
     {k: [x for x in v if x] for k, v in all_entries_with_suffixes.items()}     
 
+    # Change hyphens to 'normal' ones   
+    all_entries_with_suffixes = \
+    {k: [x.replace(chr(8209), chr(45)) for x in v] \
+    for k, v in all_entries_with_suffixes.items()} 
+
     return all_entries_with_suffixes
 
 
@@ -70,41 +79,10 @@ def get_distinct_suffixes_for_word_form (word_form = "all"):
 
     A Sample key : value pair
 
-    'paraparau' : ('‑tanga', '‑ngia', '‑hia', '‑tia')
+    'paraparau' : ('-tanga', '-ngia', '-hia', '-tia')
 
     The code ASSUMES (correct as at May 2016) that there are no 'twigs'
     '''
-
-    # suffix problems are caused either by
-    # incorrect data (1,2,3 5) or wrong programming assumptions (4)
-
-    # the format here is a dictionary with 7 word_forms (key)
-    # and the value (incorrect suffixes, correct suffixes)
-    suffix_problems = {}
-    suffix_problems['wawana'] = \
-    (('tanga', 'wananga', '‑', '‑tanga'), 
-    ('wananga', '‑tanga'))
-    suffix_problems['pēpē'] = \
-    (('pēpētanga', '‑tanga'), 
-    ('‑tanga',))
-    suffix_problems['tangi'] = \
-    (('hanga', 'hia', '‑hanga', '‑hia', '‑nga', '‑tia'), 
-    ('‑hanga', '‑hia', '‑nga', '‑tia'))
-    suffix_problems['tuai kerekere'] = \
-    (('kerekeretanga', 'tuai'),
-    ('tuai kerekeretanga',))
-    suffix_problems['kauoroi'] = \
-    (('hia', '‑hanga', '‑hia', '‑tanga', '‑tia'),
-    ('‑hanga', '‑hia', '‑tanga', '‑tia'))
-    suffix_problems['kohi'] = \
-    (('nga', '‑a', '‑nga'),
-    ('‑a', '‑nga'))
-    suffix_problems['koto'] = \
-    (('nga', '‑hanga', '‑hia', '‑nga', '‑ngia', '‑ranga', '‑ria', '‑tanga', '‑tia'),
-    ('‑hanga', '‑hia', '‑nga', '‑ngia', '‑ranga', '‑ria', '‑tanga', '‑tia'))
-    suffix_problems['kō'] = \
-    (('tia', '‑ia', '‑nga', '‑tanga'),
-    ('‑ia', '‑nga', '‑tanga', '‑tia'))
 
     all_entries_with_suffixes = get_all_entries_with_suffixes()
     all_distinct_word_forms_with_suffixes = {}
@@ -130,10 +108,11 @@ def get_distinct_suffixes_for_word_form (word_form = "all"):
     all_distinct_word_forms_with_suffixes.items()}
 
     # sort out suffix problems
-    # check data
-    for k, v in suffix_problems.items():
+    for k, v in sp.suffix_problems.items():
+        # check data
         assert all_distinct_word_forms_with_suffixes[k] == v[0]
-        all_distinct_word_forms_with_suffixes[k] = v[1]     
+        # update data
+        all_distinct_word_forms_with_suffixes[k] = v[1] 
 
     if word_form == "all":
         return all_distinct_word_forms_with_suffixes
@@ -176,7 +155,7 @@ def assign_word_form_to_suffix_group (word_form = "all"):
 
     A Sample key : value pair
 
-    ('‑tanga', '‑ngia', '‑hia', '‑tia') : ['paraparau', ...]
+    ('-tanga', '-ngia', '-hia', '-tia') : ['paraparau', ...]
 
     The value will be sorted as Māori words
     '''
@@ -275,11 +254,5 @@ if __name__ == '__main__':
     result = function_to_call(**arguments) #note **arguments works fine for empty dict {}
 
     pprint.pprint(result)
-    '''
-    for k, v in result.items():
-        if all(x.startswith(chr(8209)) for x in k):
-            pass
-        else:
-            print(k, v)
-    '''
+
     print(len(result))
