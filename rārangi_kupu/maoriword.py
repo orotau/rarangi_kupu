@@ -101,6 +101,15 @@ def get_list_sort_key(words_input):
 
     return key1, key2, key3
 
+def get_basic_dict_sort_key(dict_key_value_tuple):
+    '''
+    return a key suitable for sorting a dictionary
+    key is a maori word
+    based on get_dict_sort_key
+    '''
+    word_input = dict_key_value_tuple[0]
+    list_sort_key = get_list_sort_key(word_input)
+    return list_sort_key
 
 def get_dict_sort_key(dict_key_value_tuple):
 

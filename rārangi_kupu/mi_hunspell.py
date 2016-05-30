@@ -7,6 +7,7 @@ import pprint
 import itertools
 import maoriword as mw
 import suffix_problems as sp
+from collections import OrderedDict
 
 
 def get_all_entries_with_suffixes():
@@ -182,9 +183,38 @@ def get_distinct_suffixes():
     distinct_suffix_groups = [list(x) for x in distinct_suffix_groups]
     distinct_suffix_groups = itertools.chain.from_iterable(distinct_suffix_groups)
     distinct_suffixes = sorted(list(set(distinct_suffix_groups)))
-    return distinct_suffixes  
-        
+    return distinct_suffixes
 
+def get_all_irregular_suffixes():
+    '''
+    return all irregular suffixes and their base words
+    will be used to create the .aff file
+
+    Sample entry in the dictionary
+     'tatau': ['tauanga', 'tauranga', 'tauria']
+
+    Note that the keys are sorted and this is vital as they 
+    will be numbered in the .aff file and refered to by these
+    numbers in the .dic file
+    '''
+    all_irregular_suffixes = {}
+    word_form_and_suffixes = get_distinct_suffixes_for_word_form()
+    for k, v in word_form_and_suffixes.items():
+        irregular_suffixes = [x for x in v if not x.startswith('-')]
+        if irregular_suffixes:
+            all_irregular_suffixes[k] = irregular_suffixes
+
+    all_irregular_suffixes = OrderedDict(sorted(all_irregular_suffixes.items(),
+                                         key=mw.get_basic_dict_sort_key)) 
+    return all_irregular_suffixes
+
+def get_all_regular_suffixes():
+
+    all_distinct_suffixes = get_distinct_suffixes()
+    all_regular_suffixes = [x for x in all_distinct_suffixes if x.startswith('-')]
+    all_regular_suffixes = sorted(all_regular_suffixes, key=mw.get_list_sort_key)
+
+    return all_regular_suffixes
 
 if __name__ == '__main__':
 
@@ -224,6 +254,14 @@ if __name__ == '__main__':
     # create the parser for the get_distinct_suffixes function
     get_distinct_suffixes_parser = subparsers.add_parser('get_distinct_suffixes')
     get_distinct_suffixes_parser.set_defaults(function = get_distinct_suffixes)
+
+    # create the parser for the get_all_irregular_suffixes function
+    get_all_irregular_suffixes_parser = subparsers.add_parser('get_all_irregular_suffixes')
+    get_all_irregular_suffixes_parser.set_defaults(function = get_all_irregular_suffixes)
+
+    # create the parser for the get_all_regular_suffixes function
+    get_all_regular_suffixes_parser = subparsers.add_parser('get_all_regular_suffixes')
+    get_all_regular_suffixes_parser.set_defaults(function = get_all_regular_suffixes)
 
     # parse the arguments
     arguments = parser.parse_args()
