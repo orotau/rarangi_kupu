@@ -54,6 +54,7 @@ def create_text_file(file_id):
     TEXT_EXTENSION = "txt"
     TAUIRA_FILE_ID = "hpk_tauira" # duplicated with the choices in the call
     HPK_OPEN_COMPOUNDS_FILE_ID = "hpk_open_compounds"
+    HUNSPELL_DIC_CANDIDATES_FILE_ID = "mi_dic_candidates"
 
     cf = config.ConfigFile()
     text_files_path = (cf.configfile[cf.computername]['text_files_path'])
@@ -116,6 +117,16 @@ def create_text_file(file_id):
                     compound_word = candidate_word                    
                     myfile.write(compound_word + "\n")
         return True
+
+
+    if file_id == HUNSPELL_DIC_CANDIDATES_FILE_ID:
+        dic_candidates = pataka.get_all_entries_as_list()
+
+        # write the file
+        with open(text_file_path, "a") as myfile:
+            for candidate_word in dic_candidates:
+                myfile.write(candidate_word + "\n")
+        return True
          
 
 
@@ -132,7 +143,8 @@ if __name__ == '__main__':
     # create the parser for the get_all_entries function
     create_text_file_parser = subparsers.add_parser('create_text_file')
     create_text_file_parser.add_argument('file_id', choices = ['hpk_tauira',
-                                                               'hpk_open_compounds'])
+                                                               'hpk_open_compounds',
+                                                               'mi_dic_candidates'])
     create_text_file_parser.set_defaults(function = create_text_file)
 
     # parse the arguments

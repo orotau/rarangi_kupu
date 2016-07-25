@@ -289,9 +289,10 @@ if __name__ == '__main__':
 
     result = function_to_call(**arguments) #note **arguments works fine for empty dict {}
    
+
+    #pprint.pprint(result)
     print (len(result))
     print (type(result))
-    pprint.pprint(result)
     '''
     if isinstance(result, list):
         pprint.pprint(result)
