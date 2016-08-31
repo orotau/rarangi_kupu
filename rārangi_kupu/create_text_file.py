@@ -14,6 +14,7 @@ import os
 import pataka
 import maoriword as mw
 import spelling_mistakes
+import mi_hunspell
 
 def query_yes_no(question, default="no"):
     """Ask a yes/no question via raw_input() and return their answer.
@@ -55,6 +56,8 @@ def create_text_file(file_id):
     TAUIRA_FILE_ID = "hpk_tauira" # duplicated with the choices in the call
     HPK_OPEN_COMPOUNDS_FILE_ID = "hpk_open_compounds"
     HUNSPELL_DIC_CANDIDATES_FILE_ID = "mi_dic_candidates"
+    HUNSPELL_DIC_SUFFIXES_FILE_ID = "mi_dic_suffixes"
+    HPK_ALL_WORDS = "hpk_all"
 
     cf = config.ConfigFile()
     text_files_path = (cf.configfile[cf.computername]['text_files_path'])
@@ -96,7 +99,8 @@ def create_text_file(file_id):
                 if sm[0] in t:
                     all_tauira[index] = t.replace(sm[0], sm[1])
 
-        all_tauira = sorted(all_tauira) # Pākehā style as maori code not working Feb 2016
+        #get rid of dups and  do Pākehā style sorting as maori code not working Feb 2016
+        all_tauira = sorted(list(set(all_tauira)))
 
         # write the file
         with open(text_file_path, "a") as myfile:
@@ -127,8 +131,36 @@ def create_text_file(file_id):
             for candidate_word in dic_candidates:
                 myfile.write(candidate_word + "\n")
         return True
-         
 
+
+    if file_id == HUNSPELL_DIC_SUFFIXES_FILE_ID:
+        # trying just pprinting the dict
+        dic_suffixes = mi_hunspell.get_distinct_suffixes_for_word_form()
+
+        from pprint import pprint
+
+        # write the file
+        with open(text_file_path, "a") as myfile:
+            myfile.write("words_and_suffixes = (" + "\n")
+            pprint(dic_suffixes, stream=myfile)
+            myfile.write(")" + "\n")
+        return True  
+
+    if file_id == HPK_ALL_WORDS:
+        from collections import namedtuple
+        Word_Forms = namedtuple('Word_Forms', 'ok not_ok')  
+        word_forms = pataka.get_word_forms()
+        word_forms_as_list = (word_forms['ese'].ok + word_forms['ese'].not_ok +
+                                  word_forms['n'].ok + word_forms['n'].not_ok +   
+                                  word_forms['p'].ok + word_forms['p'].not_ok)
+        word_forms_as_list = list(set(word_forms_as_list))
+        word_forms_as_list.sort(key=mw.get_list_sort_key)
+        # write the file
+        with open(text_file_path, "a") as myfile:
+            for word_form in word_forms_as_list:
+                myfile.write(word_form + "\n")
+        return True
+        
 
 if __name__ == '__main__':
 
@@ -144,7 +176,9 @@ if __name__ == '__main__':
     create_text_file_parser = subparsers.add_parser('create_text_file')
     create_text_file_parser.add_argument('file_id', choices = ['hpk_tauira',
                                                                'hpk_open_compounds',
-                                                               'mi_dic_candidates'])
+                                                               'mi_dic_candidates',
+                                                               'hpk_all',                                                               'mi_dic_candidates',
+                                                               'mi_dic_suffixes'])
     create_text_file_parser.set_defaults(function = create_text_file)
 
     # parse the arguments

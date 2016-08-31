@@ -291,13 +291,14 @@ if __name__ == '__main__':
    
 
     #pprint.pprint(result)
-    print (len(result))
-    print (type(result))
-    '''
+    #print (len(result))
+    #print (type(result))
+
     if isinstance(result, list):
         pprint.pprint(result)
         print(len(result))
     elif isinstance(result, dict):
+        '''
         passives = {k:v for k,v in result.items() if v["pīmuri_whakahāngū"]}
         irregulars = []
         for k, v in passives.items():
@@ -309,7 +310,10 @@ if __name__ == '__main__':
         irregulars = [x[0] + " " + x[1] for x in irregulars] # hack to allow sorting
         irregulars = sorted(irregulars, key=mw.get_list_sort_key)
         pprint.pprint(irregulars)
-    '''
+        '''
+        for k, v in result.items():
+            if "maho" in v["whakamahinga_kupu_2"]:
+                print(k)
 
         #with open("test.txt", "a") as myfile:
         #    for k, v in tauira.items():

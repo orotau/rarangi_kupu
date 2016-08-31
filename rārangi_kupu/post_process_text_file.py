@@ -132,4 +132,4 @@ if __name__ == '__main__':
 
     result = function_to_call(**arguments) #note **arguments works fine for empty dict {}
    
-    print (result)
+    pprint.pprint (result)
