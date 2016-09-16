@@ -102,6 +102,15 @@ def create_text_file(file_id):
         #get rid of dups and  do Pākehā style sorting as maori code not working Feb 2016
         all_tauira = sorted(list(set(all_tauira)))
 
+        for t in all_tauira:
+            insides = [x for x in all_tauira if t in x and t != x]
+            if insides:
+                print (t)
+                for i in insides:
+                    print (i)
+                print ("===========================")
+                print ("")
+
         # write the file
         with open(text_file_path, "a") as myfile:
             for t in all_tauira:

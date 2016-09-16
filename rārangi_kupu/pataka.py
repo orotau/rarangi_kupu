@@ -312,8 +312,13 @@ if __name__ == '__main__':
         pprint.pprint(irregulars)
         '''
         for k, v in result.items():
+            if v["whakamahinga_kupu_1"] == "hono":
+                print (k)
+
+        print ("----------------------------")
+        for k, v in result.items():
             if "maho" in v["whakamahinga_kupu_2"]:
-                print(k)
+                print (k)
 
         #with open("test.txt", "a") as myfile:
         #    for k, v in tauira.items():

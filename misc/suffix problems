@@ -1,0 +1,21 @@
+suffix_problems = {}
+
+suffix_problems['wawana'] = \
+(('tanga', 'wananga', '‑', '‑tanga'), 
+('wananga', '‑tanga'))
+
+suffix_problems['pēpē'] = \
+(('pēpētanga', '‑tanga'), 
+('‑tanga',))
+
+suffix_problems['tangi'] = \
+(('hanga', 'hia', '‑hanga', '‑hia', '‑nga', '‑tia'), 
+('‑hanga', '‑hia', '‑nga', '‑tia'))
+
+suffix_problems['tuai kerekere'] = \
+(('kerekeretanga', 'tuai'),
+('tuai kerekeretanga',))
+
+suffix_problems['kauoroi'] = \
+(('hia', '‑hanga', '‑hia', '‑tanga', '‑tia'),
+('‑hanga', '‑hia', '‑tanga', '‑tia'))
