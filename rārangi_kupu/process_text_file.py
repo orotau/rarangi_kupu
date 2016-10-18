@@ -6,6 +6,7 @@ This is for the purposes of word frequency analysis
 '''
 
 import config
+import pprint
 from collections import namedtuple
 import os
 import re
@@ -217,7 +218,13 @@ def create_Text_Chunk(existing_Text_Chunks, text_chunk, chunk_start, chunk_end, 
 
     else:
         # there is overlap
-        print("hello")
+        print("====================")
+        print("overlap found")
+        print("text_chunk : ", text_chunk)
+        print("chunk_start : ", chunk_start)
+        print("chunk_end : ", chunk_end)
+        print("chunk_type : ", chunk_type)
+        print("====================")
         raise NameError('Overlap Found')
     
 
@@ -333,6 +340,7 @@ def process_text_file(file_id, first_line, last_line):
     from operator import itemgetter
     for k, v in chunked_lines.items():
         sorted_chunks = sorted(v,key=itemgetter(1))
+        #pprint.pprint(sorted_chunks)
         recreated_line = ''
         for chunk in sorted_chunks:
             recreated_line = recreated_line + chunk.text_chunk
@@ -363,7 +371,8 @@ if __name__ == '__main__':
 
     # create the parser for the get_all_entries function
     process_text_file_parser = subparsers.add_parser('process_text_file')
-    process_text_file_parser.add_argument('file_id', choices = ['hpk_tauira',])
+    process_text_file_parser.add_argument('file_id', choices = ['hpk_tauira',
+                                                                'hpk_definitions'])
     process_text_file_parser.add_argument('first_line')
     process_text_file_parser.add_argument('last_line')
     process_text_file_parser.set_defaults(function = process_text_file)

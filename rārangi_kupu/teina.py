@@ -1,6 +1,6 @@
 '''
 The purpose of this module is to tie entries / sub-entries
-to the tauria given.
+to the tauira given.
 
 For example
 "kōkopu ruwao" is a sub-entry and the example is
@@ -13,6 +13,7 @@ and amalgamate the results
 '''
 
 TAUIRA_FILE_ID = 'hpk_tauira'
+DEFINITIONS_FILE_ID = 'hpk_definitions'
 
 teina = {}
 
@@ -54,3 +55,5 @@ teina[TAUIRA_FILE_ID] = ([
     ("whawhai kōpūtahi", ["riri kōpūtahi"]),
     ("whetūmārama", ["whetū mārama"]),
     ])
+
+teina[DEFINITIONS_FILE_ID] = ([])

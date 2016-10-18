@@ -54,6 +54,7 @@ def create_text_file(file_id):
 
     TEXT_EXTENSION = "txt"
     TAUIRA_FILE_ID = "hpk_tauira" # duplicated with the choices in the call
+    DEFINITIONS_FILE_ID = "hpk_definitions"
     HPK_OPEN_COMPOUNDS_FILE_ID = "hpk_open_compounds"
     HUNSPELL_DIC_CANDIDATES_FILE_ID = "mi_dic_candidates"
     HUNSPELL_DIC_SUFFIXES_FILE_ID = "mi_dic_suffixes"
@@ -117,6 +118,32 @@ def create_text_file(file_id):
                 myfile.write(t + "\n")
 
         return True
+
+    if file_id == DEFINITIONS_FILE_ID:
+        all_definitions = []
+        all_entries = pataka.get_all_entries() 
+
+        # we are only interested in those entries that have at least one tauira
+        all_entries_with_definitions = ({k:v for k,v in all_entries.items() 
+                                       if v["whakamāoritanga"]})
+
+        # extract each DEFINITION into a single long list
+        for k, v in all_entries_with_definitions.items():
+            all_definitions.extend([v["whakamāoritanga"]]) 
+        
+        # replace any stray "\n" with a space ' '       
+        all_definitions = [d.replace("\n", " ") for d in all_definitions]
+
+        #get rid of dups and  do Pākehā style sorting as maori code not working Feb 2016
+        all_definitions = sorted(list(set(all_definitions)))
+
+        # write the file
+        with open(text_file_path, "a") as myfile:
+            for t in all_definitions:
+                myfile.write(t + "\n")
+
+        return True
+
 
 
     if file_id == HPK_OPEN_COMPOUNDS_FILE_ID:
@@ -184,6 +211,7 @@ if __name__ == '__main__':
     # create the parser for the get_all_entries function
     create_text_file_parser = subparsers.add_parser('create_text_file')
     create_text_file_parser.add_argument('file_id', choices = ['hpk_tauira',
+                                                               'hpk_definitions', 
                                                                'hpk_open_compounds',
                                                                'mi_dic_candidates',
                                                                'hpk_all',                                                               'mi_dic_candidates',

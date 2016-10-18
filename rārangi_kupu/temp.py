@@ -32,7 +32,7 @@ squash = [(x, y) for (x, y) in waf if x in extras]
 
 kount = 0
 for x in squash:
-    if x[0] == x[0].lower():
+    if x[0][0] == x[0][0].upper():
         kount = kount + 1
         print (kount, x[0], ",", x[1])
 

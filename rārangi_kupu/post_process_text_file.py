@@ -102,7 +102,8 @@ if __name__ == '__main__':
 
     # create the parser for the get_all_entries function
     get_words_and_counts_parser = subparsers.add_parser('get_words_and_counts')
-    get_words_and_counts_parser.add_argument('file_id', choices = ['hpk_tauira',])
+    get_words_and_counts_parser.add_argument('file_id', choices = ['hpk_tauira',
+                                                                   'hpk_definitions'])
     get_words_and_counts_parser.set_defaults(function = get_words_and_counts)
 
     # parse the arguments

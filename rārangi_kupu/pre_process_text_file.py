@@ -24,7 +24,7 @@ def is_number(s):
 def get_non_maori_words(file_id):
 
     TEXT_EXTENSION = "txt"
-    TAUIRA_FILE_ID = "hpk_tauira" # duplicated with the choices in the call
+    # TAUIRA_FILE_ID = "hpk_tauira" # duplicated with the choices in the call
 
     cf = config.ConfigFile()
     text_files_path = (cf.configfile[cf.computername]['text_files_path'])
@@ -51,7 +51,8 @@ if __name__ == '__main__':
 
     # create the parser for the get_non_maori_words function
     process_text_file_parser = subparsers.add_parser('get_non_maori_words')
-    process_text_file_parser.add_argument('file_id', choices = ['hpk_tauira',])
+    process_text_file_parser.add_argument('file_id', choices = ['hpk_tauira',
+                                                                'hpk_definitions'])
     process_text_file_parser.set_defaults(function = get_non_maori_words)
 
     # parse the arguments
