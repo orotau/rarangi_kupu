@@ -23,6 +23,8 @@ conflations_for_count = [("te", ["Te"]), ("ngā", ["Ngā"]), ("e", ["E"])]
 # as Māori words. This could be improved upon.
 # For example finding a way of including 'Whina Cooper' in the sort
 # for example. Need to think about sorting a mix of Māori and non-Māori terms
+
+# Also I had to put in lower case chemical names such as 'zn' rather than 'Zn'
 stop_words = ["k", "t", "p", "s", "w", "r", "g", "c" , "m", "h", "T", "n", \
               "rattus", "wh", "Kuīni Salote", "Pitt", "Tagata Pasifika", \
               "gastropoda", "downes", "q", "Taiwan", "C", "ng", \
@@ -31,6 +33,8 @@ stop_words = ["k", "t", "p", "s", "w", "r", "g", "c" , "m", "h", "T", "n", \
               "Rubik", "bacillus", "Kiribati", "St Pierre", "Whina Cooper", \
               "kss", "wasabi", "Mairatea Pitt-Pōrutu", "boomerang", \
               "Tana Umaga", "Chas", "Mollusca", \
+              "cl", "H", "N", "F", "fe", "zn", "al", "ag", "mg", \
+              "pb", "cu", "ca", "S", "si", "f", \
              ]
 
 def get_count_sort_key(count_and_word):

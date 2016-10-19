@@ -23,7 +23,7 @@ with open(hpk_all_file_path, 'r') as f:
 
 print(len(hpk_all))
 
-waf = words_and_frequencies.waf
+waf = words_and_frequencies.waf2
 all_words = [x[0] for x in waf]
 
 extras = list(set(all_words) - set(hpk_all))
@@ -32,9 +32,8 @@ squash = [(x, y) for (x, y) in waf if x in extras]
 
 kount = 0
 for x in squash:
-    if x[0][0] == x[0][0].upper():
-        kount = kount + 1
-        print (kount, x[0], ",", x[1])
+    kount = kount + 1
+    print (kount, x[0], ",", x[1])
 
 print (len(squash))
 
