@@ -13,7 +13,7 @@ class ConfigFile():
 
     config_paths = {
         'graham-Aspire-E1-522': '/home/graham/PythonProjects/rārangi_kupu/config.txt',
-        'graham-ubuntu': '/home/graham/PythonProjects/rarangi_kupu/config.txt'
+        'graham-desktop-ubuntu': '/home/graham/PythonProjects/rarangi_kupu/config.txt'
         }
 
     def __init__(self):
