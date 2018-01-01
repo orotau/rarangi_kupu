@@ -35,7 +35,7 @@ def create_punakupu_trees(letter):
     #open the html files for the letter
     for fyle in html_file_names:
         with open(target_folder + fyle) as f: #read only
-            soup = BeautifulSoup(f.read())
+            soup = BeautifulSoup(f.read(), "html.parser")
 
         #get all the headword tags in the html document
         all_headword_tags = soup.find_all(class_="headword")
@@ -174,7 +174,7 @@ def get_raw_branches_and_twigs(soup, headword_tag):
     while True:
         ns = ns.next_sibling
         if isinstance(ns, Tag):
-            mini_soup = BeautifulSoup(str(ns))
+            mini_soup = BeautifulSoup(str(ns), "html.parser")
             #Have we gone too far? 
             too_far = False
 
@@ -251,7 +251,7 @@ def partition_raw_branch_or_twig(raw_branch_or_twig_tbp):
                 break
         partitioned_raw_branch_or_twig.insert(0, str(raw_branch_or_twig_tbp)) 
         
-        partitioned_raw_branch_or_twig = [BeautifulSoup(x) for x in  partitioned_raw_branch_or_twig]
+        partitioned_raw_branch_or_twig = [BeautifulSoup(x, "html.parser") for x in  partitioned_raw_branch_or_twig]
     else:
         # no tuakana / teina section
         partitioned_raw_branch_or_twig.append(raw_branch_or_twig_tbp)
