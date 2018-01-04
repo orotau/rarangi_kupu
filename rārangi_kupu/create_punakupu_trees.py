@@ -1,8 +1,11 @@
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup, Tag, NavigableString
 from collections import namedtuple
 import config
 import os
 import pprint
+
+#create named tuple to store unique keys
+Word_ID = namedtuple('Word_ID', 'root_number trunk branch_number twig twig_number')
 
 def create_punakupu_trees(letter):
     '''
@@ -20,9 +23,6 @@ def create_punakupu_trees(letter):
 
     #word trees
     word_trees={}
-
-    #create named tuple to store unique keys
-    Word_ID = namedtuple('Word_ID', 'root_number trunk branch_number twig twig_number')
 
     # get the dump path
     cf = config.ConfigFile()
@@ -67,10 +67,8 @@ def create_punakupu_trees(letter):
 
                 raw_branch_or_twig_tbp = raw_branch_or_twig
                 partitioned_raw_branch_or_twig = partition_raw_branch_or_twig(raw_branch_or_twig_tbp)
-                for i in partitioned_raw_branch_or_twig:
-                    if len(partitioned_raw_branch_or_twig) > 2:
-                        pprint.pprint (partitioned_raw_branch_or_twig)
-                        print("=======================================")
+                pprint.pprint (partitioned_raw_branch_or_twig)
+                print("=======================================")
                 
                 branch_number = get_branch_number(partitioned_raw_branch_or_twig[0])
 
@@ -107,35 +105,24 @@ def create_punakupu_trees(letter):
                     branch_number = 1
 
                 word_id = Word_ID(root_number, trunk, branch_number, twig, twig_number)
-                # print(word_id)
+                print("typeee", type(word_id))
 
-                leaves = {} #  9 keys in all
-                atua = get_atua(partitioned_raw_branch_or_twig[0]) #1
-                leaves["atua"] = atua
+                ttt_leaves = {} # tuakana, teina, titiro
+                # Tuakana
+                all_tuakana = []
+                for partition in partitioned_raw_branch_or_twig:
+                    tuakana = get_tuakana(partition)
+                    if tuakana:
+                        print(tuakana)
+                        all_tuakana.append(tuakana)
 
-                reo_kē = is_reo_kē(partitioned_raw_branch_or_twig[0]) #2
-                leaves["reo_kē"] = reo_kē
-
-                hou = is_hou(partitioned_raw_branch_or_twig[0]) #3
-                leaves["hou"] = hou
-
-                whakamāoritanga = get_whakamāoritanga(partitioned_raw_branch_or_twig[0]) #4
-                leaves["whakamāoritanga"] = whakamāoritanga
-
-                tauira = get_tauira(partitioned_raw_branch_or_twig[0]) #5
-                leaves["tauira"] = tauira
-
-                whakamahinga_kupu_1 = get_primarywordclass(partitioned_raw_branch_or_twig[0]) #6
-                leaves["whakamahinga_kupu_1"] = whakamahinga_kupu_1
-
-                whakamahinga_kupu_2 = get_secondarywordclasses(partitioned_raw_branch_or_twig[0]) #7
-                leaves["whakamahinga_kupu_2"] = whakamahinga_kupu_2
-
-                pīmuri_whakahāngū = get_passives(partitioned_raw_branch_or_twig[0]) #8
-                leaves["pīmuri_whakahāngū"] = pīmuri_whakahāngū
-
-                pīmuri_whakaingoa = get_nominalisations(partitioned_raw_branch_or_twig[0]) #9
-                leaves["pīmuri_whakaingoa"] = pīmuri_whakaingoa
+                if all_tuakana:
+                    print(all_tuakana)
+                    ttt_leaves["tuakana"] = all_tuakana[0]
+                    print("dict", ttt_leaves["tuakana"])
+                else:
+                    print("hi")
+                    ttt_leaves["tuakana"] = None
 
                 if word_id in word_trees:
                     #major problem the key already exists!
@@ -146,8 +133,7 @@ def create_punakupu_trees(letter):
                     else:
                         raise ValueError
                 else:
-                    leaves.clear() # remove all leaves for the moment
-                    word_trees[word_id] = leaves
+                    word_trees[word_id] = ttt_leaves["tuakana"]
 
                 print(word_id, "durp")
 
@@ -297,137 +283,44 @@ def get_branch_number(main_part):
     if is_twig:
         return None
 
-def get_atua(raw_branch_or_twig):
+def get_tuakana(raw_branch_or_twig):
     '''
     Given either a raw branch or twig
-    Return a list of the atua
-    Expecting there to be atua.
-    If not some error will be thrown
-    '''
-    atua_soup = raw_branch_or_twig.find(class_="atua")
-    atua = atua_soup.string.split(',')
-    atua = [x.strip() for x in atua]
-    return atua
+    Return the tuakana
+    Expecting there to be 0 or 1.
+    If not an error will be thrown
 
-def is_reo_kē(raw_branch_or_twig):
+    Also assuming that all tuakana are branches and not twigs ...
     '''
-    Given either a raw branch or twig
-    Return True (reo kē) or False
-    '''
-    usage_soup = raw_branch_or_twig.find(class_="usage")
-    if usage_soup:
-        if 'reo kē' in usage_soup.string:
-            return True
+    # check out the number of tuakana
+    tuakana_soup = raw_branch_or_twig.find_all(class_ = "seemastersyn")
+    if tuakana_soup:
+        if len(tuakana_soup) == 1:
+            tuakana = tuakana_soup[0].string
+            # get the root number and the branch number if there are any
+            root_number = 1 # default, will be updated if there is a variantno
+            branch_number = 1 # default, will be updated if there is a majsense
+            for ns in tuakana_soup[0].next_siblings:
+                if isinstance(ns, Tag):
+                    ns_soup = BeautifulSoup(str(ns), "html.parser")
+                    if ns_soup.select_one(".variantno"): # root number
+                        root_number = ns_soup.select_one(".variantno").string.strip()
+                        root_number = int(root_number)
+                    if ns_soup.select_one(".majsense"): # branch number
+                        branch_number = ns_soup.select_one(".majsense").string.strip()
+                        branch_number = int(branch_number)
         else:
-            return False
+            # we have found more than one tuakana
+            raise NameError(len(tuakana_soup), " tuakana found, we are assuming 0 or 1")
+
     else:
-        return False
+        # no tuakana found
+        return None
 
-def is_hou(raw_branch_or_twig):
-    '''
-    Given either a raw branch or twig
-    Return True (hou) or False
-    '''
-    usage_soup = raw_branch_or_twig.find(class_="usage")
-    if usage_soup:
-        if 'hou' in usage_soup.string:
-            return True
-        else:
-            return False
-    else:
-        return False
+    tuakana_id = Word_ID(root_number, tuakana, branch_number, False, 0)
+    print("type of return", type(tuakana_id))
+    return tuakana_id
 
-def get_whakamāoritanga(raw_branch_or_twig):
-    '''
-    Given either a raw branch or twig
-    Return the whakamāortianga if it exists
-    Return '' and print message otherwise
-    '''
-
-    whakamāoritanga_soup = raw_branch_or_twig.find(class_="definition")
-    try:
-        return whakamāoritanga_soup.string
-    except AttributeError:
-        #there is no definition (p.36 arumoni for example)
-        print ('no defintion in soup' , raw_branch_or_twig)
-        return ''
-
-def get_tauira(raw_branch_or_twig):
-    '''
-    Given either a raw branch or twig
-    Return the tauira
-    Expecting there to be at least one.
-    If not some error will be thrown (NoneType object is not iterable)
-
-    There is the possibility that within the example there is another tag 
-    examplehighlight, which means a little more complexity.
-    '''
-    tauira = []
-    tauira_soup = raw_branch_or_twig.find_all(class_="example")
-    for tauira_mini_soup in tauira_soup:
-        tauira_mini_soup_string = tauira_mini_soup.string
-        if not tauira_mini_soup_string:
-            #cannot find tauira text due to assumed presence of examplehighlight tag
-            tauira_parts = list(tauira_mini_soup.strings)
-            tauira_mini_soup_string = ''.join(tauira_parts)
-        tauira.append(tauira_mini_soup_string)
-    return tauira
-
-def get_primarywordclass(raw_branch_or_twig):
-    '''
-    Given either a raw branch or twig
-    Return the primary word class
-    It is possible that there may be no primary word class 
-    (Don't really know why but it certainly happens in the dictionary)
-    I don't know if there can be more than one
-    but a return value of None will possibly point to this.
-    '''
-    primarywordclass_soup = raw_branch_or_twig.find(class_="primarywordclass")
-    if primarywordclass_soup:
-        return primarywordclass_soup.string
-    else:
-        return ""
-
-def get_secondarywordclasses(raw_branch_or_twig):
-    '''
-    Given either a raw branch or twig
-    Return the secondary word class(es)
-    It is possible that there may be no secondary word class 
-    There can be more than one.
-    '''
-    secondary_word_classes = []
-    secondarywordclass_soup = raw_branch_or_twig.find(class_="secondarywordclass")
-    if secondarywordclass_soup:
-        secondary_word_classes = list(secondarywordclass_soup.strings) 
-        # remove ', ' list entries     
-        secondary_word_classes = [x for x in secondary_word_classes if x != ", "]
-    return secondary_word_classes
-
-def get_passives(raw_branch_or_twig):
-    '''
-    Given either a raw branch or twig
-    Return the 'passives' as a list
-    There may be 0, 1 or more
-    We will assume entries distinguished with a space
-    '''
-    passives = []
-    passives_soup = raw_branch_or_twig.find(class_='passivised')
-    if passives_soup:
-        passives = passives_soup.string.split(" ")
-    return passives
-
-def get_nominalisations(raw_branch_or_twig):
-    '''
-    Given either a raw branch or twig
-    Return the 'nominalisations' as a list
-    There may be 0, 1 or more
-    We will assume entries distinguished with a space
-    '''
-    nominalisations = []
-    nominalisations_soup = raw_branch_or_twig.find(class_='nominalised')
-    if nominalisations_soup:
-        nominalisations = nominalisations_soup.string.split(" ")
-    return nominalisations        
 
 if __name__ == '__main__':
     import sys
@@ -455,7 +348,14 @@ if __name__ == '__main__':
         sys.exit()
 
     if word_trees:
+        # WHAT ON EARTH IS THIS?
+        # It looks like an effort to turn the word_trees dictionary into a json file
+        # Not sure why I wanted to store things as json files, so I could look at them I think
+        # rather than pickle. 
 
+        # the main issue being storing namedtuples in json form
+
+        # this is negatively impacting the namedtuples in the values side
         word_trees_for_json = {(str(k)[len(type(k).__name__) + 1 : -1]).replace('=',':'):v \
                                for k,v in word_trees.items()}
 
@@ -467,6 +367,11 @@ if __name__ == '__main__':
                                    for k,v in word_trees_for_json.items()} 
 
         word_trees_for_json = {"{"+k+"}":v for k,v in word_trees_for_json.items()}
+        
+        for k, v in word_trees_for_json.items():
+            if v:
+                word_trees_for_json[k] = v._asdict()
+
 
         #to json the word_tree dictionary
         cf = config.ConfigFile()
